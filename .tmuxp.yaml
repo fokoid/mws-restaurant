@@ -1,0 +1,13 @@
+session_name: mws-restaurant
+start_directory: .
+windows:
+  - window_name: editor
+    panes:
+      - shell_command: nvim
+  - window_name: console
+    panes:
+      - blank
+  - window_name: server
+    panes:
+      - yarn start
+      - blank
