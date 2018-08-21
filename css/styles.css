@@ -16,7 +16,7 @@ td,
 th,
 p {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 10pt;
+  font-size: 16pt;
   color: #333;
   line-height: 1.5;
 }
@@ -30,7 +30,6 @@ body {
 ul,
 li {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 10pt;
   color: #333;
 }
 
@@ -82,7 +81,6 @@ main {
 /* ====================== Navigation ====================== */
 nav {
   width: 100%;
-  height: 80px;
   background-color: #252831;
   text-align:center;
   display: flex;
@@ -93,12 +91,10 @@ nav {
 nav h1 {
   padding: 10px 20px;
   margin: 0;
-  line-height: 30px;
 }
 
 nav h1 a {
   color: #fff;
-  font-size: 14pt;
   font-weight: 200;
   letter-spacing: 10px;
   text-transform: uppercase;
@@ -108,7 +104,6 @@ nav h1 a {
   padding: 10px 40px 16px;
   list-style: none;
   background-color: #eee;
-  font-size: 17px;
   margin: 0;
   width: calc(50% - 80px);
 }
@@ -156,7 +151,7 @@ nav h1 a {
 
 .filter-options h2 {
   color: white;
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: normal;
   line-height: 1;
   margin: 10px 20px;
@@ -166,7 +161,7 @@ nav h1 a {
   background-color: white;
   border: 1px solid #fff;
   font-family: Arial,sans-serif;
-  font-size: 11pt;
+  font-size: 1em;
   height: 35px;
   letter-spacing: 0;
   margin: 5px 10px;
@@ -211,7 +206,6 @@ nav h1 a {
 .restaurants-list li h1 {
   color: #f18200;
   font-family: Arial,sans-serif;
-  font-size: 16pt;
   font-weight: 200;
   letter-spacing: 0;
   line-height: 1.3;
@@ -223,7 +217,6 @@ nav h1 a {
 .restaurants-list p {
   margin: 0;
   padding: 0 10px;
-  font-size: 11pt;
 }
 
 .restaurants-list li a {
@@ -231,7 +224,6 @@ nav h1 a {
   /* border-bottom: 3px solid #eee; */
   color: #fff;
   display: inline-block;
-  font-size: 16pt;
   /* margin: 15px 0 0;
   padding: 8px 30px 10px;*/
   margin: 3px;
@@ -277,7 +269,7 @@ nav h1 a {
 .restaurant-name {
   color: #f18200;
   font-family: Arial,sans-serif;
-  font-size: 20pt;
+  font-size: 1.5em;
   font-weight: 200;
   letter-spacing: 0;
   margin: 15px 0 30px;
@@ -321,7 +313,7 @@ nav h1 a {
 
 .reviews-container h2 {
   color: #f58500;
-  font-size: 24pt;
+  font-size: 1.5em;
   font-weight: 300;
   letter-spacing: -1px;
   padding-bottom: 1pt;
@@ -359,7 +351,6 @@ footer {
   text-align: center;
   text-transform: uppercase;
   padding: 25px 20px 25px;
-  font-size: 12pt;
   color: #aaa;
   box-sizing: border-box;
 }
