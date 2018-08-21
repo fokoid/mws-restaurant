@@ -93,6 +93,12 @@ nav h1 {
   margin: 0;
 }
 
+@media screen and (max-width: 359px) {
+  nav h1 {
+    font-size: 1.2em;
+  }
+}
+
 nav h1 a {
   color: #fff;
   font-weight: 200;
@@ -117,7 +123,7 @@ nav h1 a {
 .breadcrumb li+li:before {
   padding: 8px;
   color: black;
-  content: "/\00a0";
+  content: "›";
 }
 
 /* Add a color to all links inside the list */
