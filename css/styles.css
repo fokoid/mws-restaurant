@@ -184,14 +184,13 @@ nav h1 a {
 
 .restaurants-list li {
   background-color: #fff;
-  border: 2px solid #ccc;
   font-family: Arial,sans-serif;
   margin: 10px;
   min-height: 380px;
   padding: 0;
   text-align: center;
-  width: calc(100% - 2 * 10px - 2 * 2px);
-  flex-width: 1;
+  width: calc(100% - 2 * 10px);
+  border-radius: 25px 5px;
 }
 
 .restaurants-list .restaurant-img {
@@ -214,26 +213,32 @@ nav h1 a {
   text-transform: uppercase;
 }
 
-.restaurants-list p {
-  margin: 0;
-  padding: 0 10px;
+.restaurant-address {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
 }
 
+.restaurants-list p {
+  margin: 0;
+}
+
+
 .restaurants-list li a {
-  background-color: orange;
+  background-color: #f18200;
   /* border-bottom: 3px solid #eee; */
   color: #fff;
   display: inline-block;
   /* margin: 15px 0 0;
   padding: 8px 30px 10px;*/
-  margin: 3px;
+  margin: 5px;
   padding: 0;
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
   line-height: 48px;
   min-height: 48px;
-  width: calc(100% - 2 * 3px);
+  width: calc(100% - 2 * 5px);
+  border-radius: 5px 5px 25px 5px;
 }
 
 
@@ -244,11 +249,6 @@ nav h1 a {
   width: 100%;
   height: 179px;
   z-index: 2000;
-}
-
-.nav-placeholder {
-  height: 137px;
-  width: 100%;
 }
 
 .inside .map-container {
@@ -270,31 +270,38 @@ nav h1 a {
   font-size: 1.5em;
   font-weight: 200;
   letter-spacing: 0;
-  margin: 0 0 15px;
   text-transform: uppercase;
-  line-height: 1.1;
+  line-height: 1.5em;
+  padding: 10px 20px;
+  margin-block-end: 0;
+  text-align: center;
 }
 
 .restaurant-img {
   width: 100%;
+  border-radius: 25px 5px 0 0;
 }
 
 .restaurant-cuisine {
+  border-radius: 0 0 25px 5px;
   background-color: #333;
   color: #ddd;
   font-weight: 300;
   letter-spacing: 10px;
-  padding: 0 0;
+  padding: 5px 0;
   text-align: center;
   text-transform: uppercase;
   width: 100%;
+  position: relative;
+  top: -1px;
+  z-index: 1000;
 }
 
-.restaurant-address {
+.inside .restaurant-address {
   margin: 10px;
 }
 
-.restaurant-address p {
+.inside .restaurant-address p {
   margin: 0;
 }
 
@@ -321,12 +328,22 @@ nav h1 a {
 .restaurant-hours td:nth-child(even) {
   text-align: right;
   padding-right: 10px;
+  /*
+   * Where multiple time ranges are given, we want them to split on the commas.
+   * At our chosen font size, 200px is a suitable width to ensure this.
+   */
+  width: 200px;
 }
 
 .restaurant-container h3 {
   color: #f58500;
   font-size: 1em;
   margin: 15px 0 5px;
+}
+
+.restaurant-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .restaurant-container,
@@ -354,19 +371,54 @@ nav h1 a {
 }
 
 .reviews-list li {
-  background-color: #fff;
+  background-color: white;
   border: 2px solid #f3f3f3;
+  border-radius: 25px 5px;
   display: block;
   list-style-type: none;
   margin: 15px 0;
   overflow: hidden;
-  padding: 10px;
   position: relative;
-  width: calc(100% - 2 * 10px - 2 * 2px);
+  width: calc(100% - 2 * 2px);
 }
 
 .reviews-list li p {
   margin: 0 0 10px;
+}
+
+.reviews-container div {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  background-color: #252831;
+  color: #fdfdfd;
+  font-size: 1.2em;
+  padding: 10px;
+  justify-content: flex-end;
+}
+
+.reviews-container span {
+  padding: 0 10px;
+}
+
+.review-name {
+  width: 50%;
+  flex-grow: 1;
+}
+
+.review-date {
+  order: 10;
+  font-size: 0.8em;
+  font-variant: small-caps;
+}
+
+.review-rating {
+  color: #f58500;
+  flex-grow: 0;
+}
+
+.review-text {
+  padding: 10px;
 }
 
 /* ====================== Footer ====================== */

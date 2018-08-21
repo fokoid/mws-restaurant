@@ -169,10 +169,12 @@ createRestaurantHTML = (restaurant) => {
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
+  neighborhood.classList.add('restaurant-neighborhood');
   li.append(neighborhood);
 
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
+  address.classList.add('restaurant-address');
   li.append(address);
 
   const more = document.createElement('a');
