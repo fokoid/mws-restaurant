@@ -89,13 +89,19 @@ nav {
 }
 
 nav h1 {
-  padding: 10px 20px;
+  padding: 20px;
   margin: 0;
 }
 
 @media screen and (max-width: 359px) {
   nav h1 {
     font-size: 1.2em;
+  }
+}
+
+@media screen and (min-width: 591px) {
+  nav h1 {
+    padding: 30px 20px;
   }
 }
 
@@ -253,7 +259,6 @@ nav h1 a {
   position: fixed;
   top: 0;
   width: 100%;
-  height: 179px;
   z-index: 2000;
 }
 
@@ -261,7 +266,22 @@ nav h1 a {
   background: blue none repeat scroll 0 0;
   width: 100%;
   height: 300px;
-  margin-top: 179px;
+}
+
+.inside main {
+  margin-top: 199px;
+}
+
+@media screen and (max-width: 359px) {
+  .inside main {
+    margin-top: 179px;
+  }
+}
+
+@media screen and (min-width: 591px) {
+  .inside main {
+    margin-top: 171px;
+  }
 }
 
 .inside .map {
