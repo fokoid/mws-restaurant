@@ -157,7 +157,7 @@ createReviewHTML = (review) => {
   li.appendChild(date);
 
   const rating = document.createElement('p');
-  rating.innerHTML = `Rating: ${review.rating}`;
+  rating.innerHTML = '★'.repeat(review.rating);
   li.appendChild(rating);
 
   const comments = document.createElement('p');
