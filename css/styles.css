@@ -177,6 +177,19 @@ nav h1 a {
   width: calc(100% - 2 * 10px);
 }
 
+/* ====================== Big Brand Button ======================= */
+.brand-button {
+  display: inline-block;
+  background-color: var(--color-brand);
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 48px;
+  min-height: 48px;
+  padding: 0;
+}
+
 /* ========================== Card Layout ======================== */
 .card-container {
   display: flex;
@@ -244,18 +257,7 @@ nav h1 a {
 }
 
 .restaurant a {
-  background-color: var(--color-brand);
-  color: white;
-  display: inline-block;
-  /* margin: 15px 0 0;
-  padding: 8px 30px 10px;*/
   margin: 5px;
-  padding: 0;
-  text-align: center;
-  text-decoration: none;
-  text-transform: uppercase;
-  line-height: 48px;
-  min-height: 48px;
   width: calc(100% - 2 * 5px);
   border-radius: 5px 5px 25px 5px;
 }
