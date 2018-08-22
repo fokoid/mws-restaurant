@@ -464,11 +464,24 @@ nav h1 a {
   order: 10;
   font-size: 0.8em;
   font-variant: small-caps;
+  width: 100%;
+  text-align: right;
 }
 
 .review-rating {
   color: #f58500;
   flex-grow: 0;
+}
+
+@media screen and (min-width: 591px) {
+  .review-rating {
+    width: 20%;
+  }
+
+  .review-name,
+  .review-date {
+    width: 40%;
+  }
 }
 
 .review-text {
