@@ -187,7 +187,7 @@ nav h1 a {
   background-color: #f3f3f3;
   list-style: outside none none;
   margin: 0;
-  padding: 0;
+  padding: 10px;
   text-align: center;
   display: flex;
   flex-wrap: wrap;
@@ -197,7 +197,7 @@ nav h1 a {
 .restaurants-list li {
   background-color: #fff;
   font-family: Arial,sans-serif;
-  margin: 10px;
+  margin: 5px 5px 10px;
   min-height: 380px;
   padding: 0;
   text-align: center;
@@ -206,12 +206,12 @@ nav h1 a {
 }
 
 @media screen and (min-width: 591px) {
-  .restaurants-list li {
-    margin: 10px 20px;
+  .restaurants-list {
+    padding: 20px;
   }
 
-  .restaurants-list li:nth-child(1) {
-    margin: 20px 20px 10px;
+  .restaurants-list li {
+    margin: 5px 5px 20px;
   }
 }
 
@@ -340,16 +340,12 @@ nav h1 a {
   margin: 0;
 }
 
-.restaurant-hours h3 {
-  padding-left: 10px;
+.inside .restaurant-hours {
+  margin: 10px;
 }
 
 .restaurant-hours tr {
   vertical-align: top;
-}
-
-.restaurant-hours td {
-  padding: 5px 0;
 }
 
 .restaurant-hours table {
@@ -357,13 +353,8 @@ nav h1 a {
   width: 100%;
 }
 
-.restaurant-hours td:nth-child(odd) {
-  padding-left: 10px;
-}
-
 .restaurant-hours td:nth-child(even) {
   text-align: right;
-  padding-right: 10px;
   /*
    * Where multiple time ranges are given, we want them to split on the commas.
    * At our chosen font size, 200px is a suitable width to ensure this.
@@ -377,25 +368,33 @@ nav h1 a {
   margin: 15px 0 5px;
 }
 
-.restaurant-container {
-  display: flex;
-  flex-direction: column;
-  padding: 20px 10px;
-  width: calc(100% - 2 * 10px);
-}
-
 .restaurant-container,
 .reviews-container {
+  display: flex;
+  margin: 0;
+  padding: 10px;
+  width: calc(100% - 2 * 10px);
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
+}
+
+@media screen and (min-width: 591px) {
+  .restaurant-container,
+  .reviews-container {
+    padding: 20px;
+    width: calc(100% - 2 * 20px);
+  }
+}
+
+.restaurant-container {
+  flex-direction: column;
 }
 
 /* ====================== Restaurant Reviews ====================== */
 
 .reviews-container {
-  padding: 0;
-  margin: 0;
-  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .reviews-container h2 {
@@ -404,7 +403,8 @@ nav h1 a {
   font-weight: 300;
   letter-spacing: -1px;
   padding-bottom: 1pt;
-  margin: 10px 20px 10px;
+  padding: 10px 10px 20px;
+  margin: 0;
 }
 
 .reviews-list {
@@ -419,8 +419,8 @@ nav h1 a {
   background-color: white;
   border-radius: 25px 5px;
   display: block;
+  margin: 0;
   list-style-type: none;
-  margin: 10px;
   overflow: hidden;
   position: relative;
   width: 100%;
@@ -428,11 +428,7 @@ nav h1 a {
 
 @media screen and (min-width: 591px) {
   .reviews-list li {
-    margin: 10px 20px;
-  }
-
-  .reviews-list li:nth-child(1) {
-    margin: 20px 20px 10px;
+    margin: 5px 5px 20px;
   }
 }
 
@@ -447,16 +443,12 @@ nav h1 a {
   background-color: #252831;
   color: #fdfdfd;
   font-size: 1.2em;
-  padding: 10px;
-  justify-content: flex-end;
-}
-
-.reviews-container span {
-  padding: 0 10px;
+  padding: 10px 20px;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .review-name {
-  width: 50%;
   flex-grow: 1;
 }
 
@@ -485,7 +477,7 @@ nav h1 a {
 }
 
 .review-text {
-  padding: 10px;
+  padding: 10px 15px;
 }
 
 /* ====================== Footer ====================== */
