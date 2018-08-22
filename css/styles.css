@@ -201,8 +201,18 @@ nav h1 a {
   min-height: 380px;
   padding: 0;
   text-align: center;
-  width: calc(100% - 2 * 10px);
+  width: 100%;
   border-radius: 25px 5px;
+}
+
+@media screen and (min-width: 591px) {
+  .restaurants-list li {
+    margin: 10px 20px;
+  }
+
+  .restaurants-list li:nth-child(1) {
+    margin: 20px 20px 10px;
+  }
 }
 
 .restaurants-list .restaurant-img {
@@ -233,7 +243,6 @@ nav h1 a {
 .restaurants-list p {
   margin: 0;
 }
-
 
 .restaurants-list li a {
   background-color: #f18200;
@@ -371,17 +380,23 @@ nav h1 a {
 .restaurant-container {
   display: flex;
   flex-direction: column;
+  padding: 20px 10px;
+  width: calc(100% - 2 * 10px);
 }
 
 .restaurant-container,
 .reviews-container {
   border-bottom: 1px solid #d9d9d9;
   border-top: 1px solid #fff;
-  padding: 20px 10px;
-  width: calc(100% - 2 * 10px);
 }
 
 /* ====================== Restaurant Reviews ====================== */
+
+.reviews-container {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
 
 .reviews-container h2 {
   color: #f58500;
@@ -389,24 +404,36 @@ nav h1 a {
   font-weight: 300;
   letter-spacing: -1px;
   padding-bottom: 1pt;
-  padding-left: 10px;
+  margin: 10px 20px 10px;
 }
 
 .reviews-list {
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
 }
 
 .reviews-list li {
   background-color: white;
-  border: 2px solid #f3f3f3;
   border-radius: 25px 5px;
   display: block;
   list-style-type: none;
-  margin: 15px 0;
+  margin: 10px;
   overflow: hidden;
   position: relative;
-  width: calc(100% - 2 * 2px);
+  width: 100%;
+}
+
+@media screen and (min-width: 591px) {
+  .reviews-list li {
+    margin: 10px 20px;
+  }
+
+  .reviews-list li:nth-child(1) {
+    margin: 20px 20px 10px;
+  }
 }
 
 .reviews-list li p {
