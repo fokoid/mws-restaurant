@@ -148,8 +148,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
  */
 createReviewHTML = (review) => {
   const li = document.createElement('li');
+  li.classList.add('card', 'review');
 
   const header = document.createElement('div');
+  header.classList.add('review-header');
   li.appendChild(header);
 
   const name = document.createElement('span');
