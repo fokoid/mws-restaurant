@@ -153,6 +153,8 @@ nav h1 a {
 
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
+  display: flex;
+  flex-flow: row wrap;
   width: 100%;
   background-color: var(--color-blue);
   align-items: center;
@@ -165,6 +167,7 @@ nav h1 a {
   font-weight: normal;
   line-height: 1;
   margin: 10px 20px;
+  width: 100%;
 }
 
 .filter-options select {
@@ -174,7 +177,18 @@ nav h1 a {
   letter-spacing: 0;
   margin: 5px 10px;
   padding: 0 10px;
-  width: calc(100% - 2 * 10px);
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .filter-options {
+    flex-wrap: nowrap;
+  }
+
+  .filter-options select {
+    flex-grow: 1;
+    margin-left: 0;
+  }
 }
 
 /* ====================== Big Brand Button ======================= */
@@ -193,8 +207,8 @@ nav h1 a {
 /* ========================== Card Layout ======================== */
 .card-container {
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
+  flex-flow: row wrap;
+  justify-content: space-between;
   margin: 0;
   padding: 10px;
   background-color: var(--color-bg);
@@ -229,17 +243,36 @@ nav h1 a {
   }
 }
 
+@media screen and (min-width: 768px) {
+  .card {
+    width: calc(50% - 2 * 10px);
+    margin: 10px;
+  }
+}
+
 /* ====================== Restaurant Listing ====================== */
+.restaurant-img {
+  margin: 0;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
 .restaurants-list .restaurant-img {
   background-color: var(--color-missing);
   display: block;
-  margin: 0;
   max-width: 100%;
   min-height: 248px;
   min-width: 100%;
 }
 
-.restaurant h1 {
+.restaurants-list .restaurant {
+  text-align: center;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+}
+
+.restaurants-list h1 {
   color: var(--color-brand);
   font-weight: 200;
   letter-spacing: 0;
@@ -247,23 +280,23 @@ nav h1 a {
   margin: 10px auto 10px;
   width: 80%;
   text-transform: uppercase;
-}
-
-.restaurant p,
-.restaurant h1 {
   text-align: center;
+  margin: 10px auto;
+  flex-grow: 1;
 }
 
-.restaurant-address {
+.restaurants-list p {
+  text-align: center;
+  margin: 0 10px;
+}
+
+.restaurants-list .restaurant-address {
   border-bottom: 1px solid var(--color-bg);
   padding-bottom: 10px;
+  flex-grow: 1;
 }
 
-.restaurant p {
-  margin: 0;
-}
-
-.restaurant a {
+.restaurants-list a {
   margin: 5px;
   width: calc(100% - 2 * 5px);
   border-radius: 5px 5px 25px 5px;
@@ -305,48 +338,33 @@ nav h1 a {
   width: 100%;
 }
 
-.restaurant-name {
-  color: var(--color-brand);
-  font-size: 1.5em;
-  font-weight: 200;
-  letter-spacing: 0;
-  text-transform: uppercase;
-  line-height: 1.5em;
-  padding: 10px 20px;
-  margin-block-end: 0;
-  text-align: center;
+.inside .restaurant-name {
+  position: relative;
+  top: -1px;
+  z-index: 10;
 }
 
-.restaurant-img {
-  width: 100%;
-  border-radius: 25px 5px 0 0;
-}
-
-.restaurant-cuisine {
-  border-radius: 0 0 25px 5px;
-  background-color: var(--color-fg);
-  color: var(--color-bg);
+.inside h2 {
   font-weight: 300;
   letter-spacing: 10px;
   padding: 5px 0;
   text-align: center;
-  text-transform: uppercase;
-  width: 100%;
-  position: relative;
-  top: -1px;
-  z-index: 1000;
+  letter-spacing: 0;
+  margin-block-end: 0;
+  text-align: center;
+  font-variant: small-caps;
+  font-size: 1.2em;
+  line-height: 1.2em;
 }
 
-.inside .restaurant-address {
+.inside .restaurant-cuisine,
+.inside .restaurant-address,
+.inside .restaurant-hours {
   margin: 10px;
 }
 
 .inside .restaurant-address p {
   margin: 0;
-}
-
-.inside .restaurant-hours {
-  margin: 10px;
 }
 
 .restaurant-hours tr {
@@ -374,7 +392,7 @@ nav h1 a {
 
 .restaurant-container {
   display: flex;
-  flex-direction: column;
+  flex-flow: column nowrap;
   margin: 0;
   padding: 10px;
   width: calc(100% - 2 * 10px);
@@ -385,6 +403,12 @@ nav h1 a {
   .restaurant-container {
     padding: 20px;
     width: calc(100% - 2 * 20px);
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .inside .restaurant-img {
+    max-height: 300px;
   }
 }
 
@@ -433,7 +457,7 @@ nav h1 a {
   flex-grow: 0;
 }
 
-@media screen and (min-width: 591px) {
+@media screen and (min-width: 591px) and (max-width: 767px) {
   .review-rating {
     width: 20%;
   }
