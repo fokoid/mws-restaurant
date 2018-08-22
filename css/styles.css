@@ -239,10 +239,6 @@ nav h1 a {
   min-width: 100%;
 }
 
-.restaurant {
-  text-align: center;
-}
-
 .restaurant h1 {
   color: var(--color-brand);
   font-weight: 200;
@@ -256,12 +252,6 @@ nav h1 a {
 .restaurant p,
 .restaurant h1 {
   text-align: center;
-}
-
-.restaurant-neighborhood {
-  font-variant: small-caps;
-  padding: 10px 20px 5px;
-  line-height: 1em;
 }
 
 .restaurant-address {
@@ -327,7 +317,7 @@ nav h1 a {
   text-align: center;
 }
 
-.inside .restaurant-img {
+.restaurant-img {
   width: 100%;
   border-radius: 25px 5px 0 0;
 }
