@@ -345,6 +345,7 @@ nav h1 a {
 
 .restaurant-hours table {
   border: none;
+  width: 100%;
 }
 
 .restaurant-hours td:nth-child(odd) {
