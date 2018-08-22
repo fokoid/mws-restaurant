@@ -151,7 +151,7 @@ createReviewHTML = (review) => {
   li.classList.add('card', 'review');
 
   const header = document.createElement('div');
-  header.classList.add('review-header');
+  header.classList.add('review-header', 'card-header');
   li.appendChild(header);
 
   const name = document.createElement('span');
