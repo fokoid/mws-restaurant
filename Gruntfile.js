@@ -1,4 +1,5 @@
 const path = require('path');
+const imageSrcDir = 'img_src/';
 const imageDir = path.join(__dirname, 'public', 'img');
 const imageWidths = [400, 800];
 const jpegQuality = 50;
@@ -20,8 +21,8 @@ module.exports = grunt => {
         },
         files: [{
           expand: true,
-          src: ['**/*.jpg'],
-          cwd: 'img_src/',
+          src: ['*.jpg'],
+          cwd: imageSrcDir,
           dest: imageDir
         }]
       }
@@ -35,7 +36,7 @@ module.exports = grunt => {
         files: [{
           expand: true,
           cwd: imageDir,
-          src: ['**/*.jpg'],
+          src: ['*.jpg'],
           dest: imageDir
         }]
       }
@@ -53,16 +54,29 @@ module.exports = grunt => {
           create: [imageDir]
         }
       }
+    },
+
+    copy: {
+      dev: {
+        files: [{
+          expand: true,
+          cwd: path.join(imageSrcDir, 'fixed'),
+          src: '*.png',
+          dest: imageDir
+        }]
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-responsive-images');
   grunt.loadNpmTasks('grunt-cwebp');
   grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-mkdir');
   grunt.registerTask('default', [
     'clean',
     'mkdir',
+    'copy',
     'responsive_images',
     'cwebp'
   ]);

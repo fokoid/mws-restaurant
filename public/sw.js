@@ -5,7 +5,8 @@ const URL_LIST = [
   '/js/restaurant_info.js',
   '/js/shared.js',
   '/js/dbhelper.js',
-  '/css/styles.css'
+  '/css/styles.css',
+  '/manifest.json'
 ];
 
 self.addEventListener('install', event => void event.waitUntil((async () => {
