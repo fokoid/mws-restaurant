@@ -1,5 +1,5 @@
 const path = require('path');
-const imageDir = path.join(__dirname, 'img');
+const imageDir = path.join(__dirname, 'public', 'img');
 const imageWidths = [400, 800];
 const jpegQuality = 50;
 const webpQuality = 50;
