@@ -78,9 +78,14 @@ main {
 }
 
 /* ====================== Navigation ====================== */
+header {
+  background-color: #eee;
+}
+
 nav {
-  width: 100%;
   background-color: var(--color-brand-dark);
+  width: 100%;
+  margin: 0 auto;
   text-align:center;
   display: flex;
   align-items: center;
@@ -112,11 +117,10 @@ nav h1 a {
 }
 
 .breadcrumb {
+  max-width: 1300px;
+  margin: 0 auto;
   padding: 16px 24px;
   list-style: none;
-  background-color: #eee;
-  margin: 0;
-  width: 100%;
 }
 
 /* Display list items side by side */
@@ -209,10 +213,11 @@ nav h1 a {
   display: flex;
   flex-flow: row wrap;
   justify-content: space-between;
-  margin: 0;
+  margin: 0 auto;
   padding: 10px;
   background-color: var(--color-bg);
   list-style: outside none none;
+  max-width: 1600px;
 }
 
 .card {
@@ -247,6 +252,12 @@ nav h1 a {
   .card {
     width: calc(50% - 2 * 10px);
     margin: 10px;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  .card {
+    width: calc(33% - 2 * 10px);
   }
 }
 
@@ -339,10 +350,18 @@ nav h1 a {
 .restaurant-container {
   display: flex;
   flex-flow: column nowrap;
-  margin: 0;
+  margin: 0 auto;
   padding: 10px;
   width: calc(100% - 2 * 10px);
+  max-width: 1024px;
   border-bottom: 1px solid #d9d9d9;
+}
+
+.restaurant-img-cuisine,
+.restaurant-hours-address {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
 }
 
 @media screen and (min-width: 591px) {
@@ -365,6 +384,13 @@ nav h1 a {
 
   .inside .restaurant-hours h3 {
     margin-top: 0;
+    line-height: 1.3em;
+  }
+}
+
+@media screen and (min-width: 1300px) {
+  .inside .restaurant-hours {
+    margin-bottom: 20px;
   }
 }
 
@@ -402,9 +428,10 @@ nav h1 a {
 }
 
 .restaurant-hours table {
-  margin: 0 auto;
+  margin: 0;
   border: none;
   width: 100%;
+  max-width: 400px;
 }
 
 .restaurant-hours tr {
