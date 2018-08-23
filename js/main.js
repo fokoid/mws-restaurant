@@ -159,10 +159,8 @@ createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   li.classList.add('card', 'restaurant');
 
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  li.append(image);
+  const picture = createRestaurantPicture(restaurant);
+  li.append(picture);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
@@ -182,9 +180,43 @@ createRestaurantHTML = (restaurant) => {
   more.classList.add('brand-button');
   more.innerHTML = 'View Details';
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  li.append(more);
 
-  return li
+  return li;
+}
+
+/**
+ * Create restaurant picture + sources
+ */
+createRestaurantPicture = (restaurant) => {
+  const picture = document.createElement('picture');
+
+  const sourceSizes = [
+    '100vw'
+  ].join(', ')
+  const sourceWidths = [200, 400, 800];
+  const sourceSet = format => sourceWidths.map(
+    width => `${DBHelper.imageUrlForRestaurant(restaurant, width, format)} ${width}w`
+  ).join(', ');
+
+  const webpSource = document.createElement('source');
+  webpSource.sizes = sourceSizes;
+  webpSource.srcset = sourceSet('webp');
+  webpSource.type = 'image/webp';
+  picture.append(webpSource);
+
+  const jpegSource = document.createElement('source');
+  jpegSource.sizes = sourceSizes;
+  jpegSource.srcset = sourceSet('jpg');
+  picture.append(jpegSource);
+
+  const image = document.createElement('img');
+  image.className = 'restaurant-img';
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt = restaurant.name;
+  picture.append(image);
+
+  return picture;
 }
 
 /**
