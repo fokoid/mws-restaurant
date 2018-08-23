@@ -6,8 +6,10 @@
   "repository": "https://github.com/thornecc/mws-restaurant-stage-1",
   "author": "Alex Thorne <alex@thorne.io>",
   "private": true,
+  "dependencies": {
+    "express": "^4.16.3"
+  },
   "devDependencies": {
-    "express": "^4.16.3",
     "grunt": "^1.0.3",
     "grunt-contrib-clean": "^1.1.0",
     "grunt-contrib-copy": "^1.0.0",
