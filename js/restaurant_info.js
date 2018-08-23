@@ -193,6 +193,7 @@ createReviewHTML = (review) => {
   const rating = document.createElement('span');
   rating.innerHTML = '★'.repeat(review.rating);
   rating.classList.add('review-rating');
+  rating.setAttribute('aria-label', `${review.rating} star${review.rating > 1 ? 's' : ''}`);
   header.appendChild(rating);
 
   const comments = document.createElement('p');
