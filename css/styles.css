@@ -218,7 +218,7 @@ nav h1 a {
 .card-container {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  justify-content: start;
   margin: 0 auto;
   padding: 10px;
   background-color: var(--color-bg);
