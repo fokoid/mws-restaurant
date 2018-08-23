@@ -272,7 +272,7 @@ nav h1 a {
   justify-content: space-between;
 }
 
-.restaurants-list h1 {
+.restaurants-list h2 {
   color: var(--color-brand);
   font-weight: 200;
   letter-spacing: 0;
