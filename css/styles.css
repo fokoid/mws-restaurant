@@ -39,6 +39,10 @@ a {
   text-decoration: none;
 }
 
+.leaflet-container a {
+  color: var(--color-brand) !important;
+}
+
 a:hover,
 a:focus {
   color: var(--color-blue);
