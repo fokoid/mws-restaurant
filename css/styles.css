@@ -4,9 +4,9 @@
 :root {
   --color-fg: #333;
   --color-bg: #f3f3f3;
-  --color-brand: #f58500;
+  --color-brand: #a52822;
+  --color-brand-light: #de655e;
   --color-brand-dark: #252831;
-  --color-brand-light: #444;
   --color-blue: #3397db;
   --color-missing: #ccc;
 }
@@ -35,7 +35,7 @@ body {
 }
 
 a {
-  color: var(--color-brand);
+  color: var(--color-brand-light);
   text-decoration: none;
 }
 
@@ -130,19 +130,20 @@ nav h1 a {
 
 /* Add a chevron symbol (›) before/behind each list item */
 .breadcrumb li+li:before {
+  font-weight: bold;
   padding: 8px;
   content: "›";
 }
 
 /* Add a color to all links inside the list */
 .breadcrumb li a {
-  color: #0275d8;
+  color: var(--color-brand);
   text-decoration: none;
 }
 
 /* Add a color on mouse-over */
 .breadcrumb li a:hover {
-  color: var(--color-brand);
+  color: var(--color-blue);
   text-decoration: none;
 }
 
@@ -501,7 +502,7 @@ nav h1 a {
 }
 
 .review-rating {
-  color: var(--color-brand);
+  color: var(--color-brand-light);
   flex-grow: 0;
 }
 
