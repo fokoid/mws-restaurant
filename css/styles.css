@@ -352,7 +352,24 @@ nav h1 a {
   }
 }
 
+@media screen and (min-width: 768px) {
+  .restaurant-container {
+    flex-flow: row wrap;
+    justify-content: space-around;
+  }
+
+  .inside .restaurant-img-cuisine,
+  .inside .restaurant-hours-address {
+    width: calc(50% - 20px);
+  }
+
+  .inside .restaurant-hours h3 {
+    margin-top: 0;
+  }
+}
+
 .inside h2 {
+  width: 100%;
   color: var(--color-brand);
   font-size: 1.6em;
   line-height: 1.2em;
@@ -380,18 +397,18 @@ nav h1 a {
   margin: 10px 5px 5px;
 }
 
-.inside p,
-.restaurant-hours {
+.inside p {
   margin: 0 10px;
+}
+
+.restaurant-hours table {
+  margin: 0 auto;
+  border: none;
+  width: 100%;
 }
 
 .restaurant-hours tr {
   vertical-align: top;
-}
-
-.restaurant-hours table {
-  border: none;
-  width: 100%;
 }
 
 .restaurant-hours td:nth-child(even) {
