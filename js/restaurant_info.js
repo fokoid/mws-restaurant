@@ -89,9 +89,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  const picture = document.getElementById('restaurant-img');
+  fillRestaurantPicture(picture, restaurant);
 
   // fill operating hours
   if (restaurant.operating_hours) {
@@ -99,6 +98,36 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+}
+
+/**
+ * Create restaurant picture + sources
+ */
+fillRestaurantPicture = (picture, restaurant) => {
+  const sourceSizes = [
+    '100vw'
+  ].join(', ')
+  const sourceWidths = [200, 400, 800];
+  const sourceSet = format => sourceWidths.map(
+    width => `${DBHelper.imageUrlForRestaurant(restaurant, width, format)} ${width}w`
+  ).join(', ');
+
+  const webpSource = document.createElement('source');
+  webpSource.sizes = sourceSizes;
+  webpSource.srcset = sourceSet('webp');
+  webpSource.type = 'image/webp';
+  picture.append(webpSource);
+
+  const jpegSource = document.createElement('source');
+  jpegSource.sizes = sourceSizes;
+  jpegSource.srcset = sourceSet('jpg');
+  picture.append(jpegSource);
+
+  const image = document.createElement('img');
+  image.className = 'restaurant-img';
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.alt = restaurant.name;
+  picture.append(image);
 }
 
 /**
