@@ -254,8 +254,6 @@ nav h1 a {
 .restaurant-img {
   max-width: 100%;
   margin: 0;
-  display: flex;
-  flex-flow: column nowrap;
 }
 
 .restaurants-list .restaurant-img {
@@ -266,7 +264,7 @@ nav h1 a {
   min-width: 100%;
 }
 
-.restaurants-list .restaurant {
+.restaurants-list li {
   text-align: center;
   display: flex;
   flex-flow: column nowrap;
@@ -277,8 +275,8 @@ nav h1 a {
   color: var(--color-brand);
   font-weight: 200;
   letter-spacing: 0;
-  line-height: 1.3;
   text-transform: uppercase;
+  line-height: 1.2em;
   text-align: center;
   width: 80%;
   margin: 10px auto;
@@ -338,6 +336,22 @@ nav h1 a {
   width: 100%;
 }
 
+.restaurant-container {
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0;
+  padding: 10px;
+  width: calc(100% - 2 * 10px);
+  border-bottom: 1px solid #d9d9d9;
+}
+
+@media screen and (min-width: 591px) {
+  .restaurant-container {
+    padding: 20px;
+    width: calc(100% - 2 * 20px);
+  }
+}
+
 .inside h2 {
   color: var(--color-brand);
   font-size: 1.4em;
@@ -355,14 +369,14 @@ nav h1 a {
   border-radius: 25px 5px;
 }
 
-.inside .restaurant-cuisine,
-.inside .restaurant-address,
-.inside .restaurant-hours {
-  margin: 0 10px;
+.inside h3 {
+  color: var(--color-brand);
+  margin: 10px 5px 5px;
 }
 
-.inside p {
-  margin: 0;
+.inside p,
+.restaurant-hours {
+  margin: 0 10px;
 }
 
 .restaurant-hours tr {
@@ -381,27 +395,6 @@ nav h1 a {
    * At our chosen font size, 200px is a suitable width to ensure this.
    */
   width: 200px;
-}
-
-.inside h3 {
-  color: var(--color-brand);
-  margin: 10px 0 5px;
-}
-
-.restaurant-container {
-  display: flex;
-  flex-flow: column nowrap;
-  margin: 0;
-  padding: 10px;
-  width: calc(100% - 2 * 10px);
-  border-bottom: 1px solid #d9d9d9;
-}
-
-@media screen and (min-width: 591px) {
-  .restaurant-container {
-    padding: 20px;
-    width: calc(100% - 2 * 20px);
-  }
 }
 
 /* ====================== Restaurant Reviews ====================== */
