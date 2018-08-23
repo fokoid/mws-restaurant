@@ -156,11 +156,17 @@ nav h1 a {
 
 
 /* ====================== Restaurant Filtering ====================== */
+.filter-container {
+  width: 100%;
+  background-color: var(--color-blue);
+}
+
 .filter-options {
   display: flex;
   flex-flow: row wrap;
   width: 100%;
-  background-color: var(--color-blue);
+  max-width: 1600px;
+  margin: 0 auto;
   align-items: center;
   padding: 5px 0;
 }
