@@ -354,15 +354,21 @@ nav h1 a {
 
 .inside h2 {
   color: var(--color-brand);
-  font-size: 1.4em;
-  font-weight: 300;
-  letter-spacing: 10px;
+  font-size: 1.6em;
+  line-height: 1.2em;
   padding: 5px;
-  text-align: center;
-  text-transform: uppercase;
+  font-weight: normal;
   letter-spacing: 0;
   text-align: center;
-  margin: 20px auto 10px;
+  text-transform: uppercase;
+  margin: 10px auto;
+}
+
+@media screen and (min-width: 591px) {
+  .inside h2 {
+    font-size: 2em;
+    margin: 15px auto 20px;
+  }
 }
 
 .inside .restaurant-img {
@@ -405,12 +411,19 @@ nav h1 a {
 
 .reviews-container h3 {
   color: var(--color-brand);
-  font-size: 1.5em;
-  font-weight: 300;
+  font-size: 1.6em;
+  font-weight: normal;
+  text-align: center;
   letter-spacing: -1px;
   padding-bottom: 1pt;
-  padding: 20px;
-  margin: 0;
+  padding: 0 20px;
+  margin: 20px 0 0;
+}
+
+@media screen and (min-width: 591px) {
+  .reviews-container h3 {
+    font-size: 2em;
+  }
 }
 
 .reviews-list li p {
