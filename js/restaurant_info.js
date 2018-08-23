@@ -107,7 +107,7 @@ fillRestaurantPicture = (picture, restaurant) => {
   const sourceSizes = [
     '100vw'
   ].join(', ')
-  const sourceWidths = [200, 400, 800];
+  const sourceWidths = [400, 800];
   const sourceSet = format => sourceWidths.map(
     width => `${DBHelper.imageUrlForRestaurant(restaurant, width, format)} ${width}w`
   ).join(', ');
