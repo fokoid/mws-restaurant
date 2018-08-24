@@ -7,8 +7,8 @@ var markers = []
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {
-  initMap(); // added 
+document.addEventListener('DOMContentLoaded', event => {
+  initMap(); // added
   fetchNeighborhoods();
   fetchCuisines();
 });
@@ -16,15 +16,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-fetchNeighborhoods = () => {
-  DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    if (error) { // Got an error
-      console.error(error);
-    } else {
-      self.neighborhoods = neighborhoods;
-      fillNeighborhoodsHTML();
-    }
-  });
+fetchNeighborhoods = async () => {
+  self.neighborhoods = await DBHelper.fetchNeighborhoods();
+  fillNeighborhoodsHTML();
 }
 
 /**
@@ -43,15 +37,9 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 /**
  * Fetch all cuisines and set their HTML.
  */
-fetchCuisines = () => {
-  DBHelper.fetchCuisines((error, cuisines) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.cuisines = cuisines;
-      fillCuisinesHTML();
-    }
-  });
+fetchCuisines = async () => {
+  self.cuisines = await DBHelper.fetchCuisines();
+  fillCuisinesHTML();
 }
 
 /**
@@ -104,7 +92,7 @@ initMap = () => {
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = () => {
+updateRestaurants = async () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -114,14 +102,10 @@ updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      resetRestaurants(restaurants);
-      fillRestaurantsHTML();
-    }
-  })
+  resetRestaurants(
+    await DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood)
+  );
+  fillRestaurantsHTML();
 }
 
 /**
@@ -130,6 +114,10 @@ updateRestaurants = () => {
 resetRestaurants = (restaurants) => {
   // Remove all restaurants
   self.restaurants = [];
+
+  if (!restaurants)
+    return;
+
   const ul = document.getElementById('restaurants-list');
   ul.innerHTML = '';
 
