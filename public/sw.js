@@ -1,8 +1,11 @@
-const CACHE_VERSION = 8;
+const CACHE_VERSION = 9;
 const CACHE_PREFIX = 'restaurant-reviews';
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
+const DB_PORT = '1337';
+
 const URL_LIST = [
   '/',
+  '/restaurant.html',
   '/js/main.js',
   '/js/restaurant_info.js',
   '/js/shared.js',
@@ -17,18 +20,19 @@ self.addEventListener('install', event => void event.waitUntil((async () => {
 })()));
 
 self.addEventListener('fetch', event => void event.respondWith((async () => {
-  const cache = await caches.open(CACHE_NAME);
-  let response = await cache.match(event.request, {
-    ignoreSearch: true
-  });
-  if (!response) {
-    try {
-      response = await fetch(event.request);
-    } catch (err) {
-      console.log(err);
-    }
-    if (response.status === 200)
-      cache.put(event.request, response.clone());
-  }
-  return response;
+  const url = new URL(event.request.url);
+
+  if (url.port === DB_PORT)
+    return fetchDB(event.request);
+  if (url.pathname.startsWith('/img/'))
+    return fetchImg(event.request);
+  return await caches.match(event.request) || await fetch(event.request);
 })()));
+
+const fetchDB = async request => {
+  return fetch(request);
+};
+
+const fetchImg = async request => {
+  return fetch(request);
+};
