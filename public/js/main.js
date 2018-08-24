@@ -182,6 +182,8 @@ createRestaurantPicture = (restaurant) => {
   const picture = document.createElement('picture');
 
   const sourceSizes = [
+    '(min-width: 1300px) 33vw',
+    '(min-width: 768px) 50vw',
     '100vw'
   ].join(', ');
   const sourceWidths = [400, 800];
@@ -202,6 +204,7 @@ createRestaurantPicture = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
+  image.sizes = sourceSizes;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = DBHelper.restaurantImageAltText(restaurant);
   picture.append(image);

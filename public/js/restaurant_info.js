@@ -96,6 +96,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantPicture = (picture, restaurant) => {
   const sourceSizes = [
+    '(min-width: 1024px) 492px',
+    '(min-width: 768px) 50vw',
     '100vw'
   ].join(', ');
   const sourceWidths = [400, 800];
@@ -116,6 +118,7 @@ fillRestaurantPicture = (picture, restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
+  image.sizes = sourceSizes;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = DBHelper.restaurantImageAltText(restaurant);
   picture.append(image);
