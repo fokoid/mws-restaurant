@@ -2,7 +2,6 @@ const CACHE_VERSION = 9;
 const CACHE_PREFIX = 'restaurant-reviews';
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}-images`;
-const DB_PORT = '1337';
 
 const URL_LIST = [
   '/',
@@ -23,16 +22,10 @@ self.addEventListener('install', event => void event.waitUntil((async () => {
 self.addEventListener('fetch', event => void event.respondWith((async () => {
   const url = new URL(event.request.url);
 
-  if (url.port === DB_PORT)
-    return fetchDB(event.request);
   if (url.pathname.startsWith('/img/'))
     return fetchImg(event.request);
   return await caches.match(event.request) || await fetch(event.request);
 })()));
-
-const fetchDB = async request => {
-  return fetch(request);
-};
 
 const fetchImg = async request => {
   // create standardized URL, with filetype and size removed
