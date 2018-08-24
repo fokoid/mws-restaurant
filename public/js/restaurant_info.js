@@ -211,6 +211,9 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
+  // aria-current="page" is optional, since this item is not a link, but we
+  // include it in case we make it a link in future.
+  li.setAttribute('aria-current', 'page');
   breadcrumb.appendChild(li);
 }
 

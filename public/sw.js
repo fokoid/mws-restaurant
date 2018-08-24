@@ -1,4 +1,4 @@
-const CACHE_NAME = 'restaurant-reviews-v5';
+const CACHE_NAME = 'restaurant-reviews-v6';
 const URL_LIST = [
   '/',
   '/js/main.js',
