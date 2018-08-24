@@ -1,8 +1,58 @@
 # Mobile Web Specialist Certification Course
 ---
+
+---
 #### _Three Stage Course Material Project - Restaurant Reviews_
 
 ## Project Overview: Stage 1
+
+### Custom Build Instructions
+
+#### Quick Version
+
+```
+yarn install
+grunt
+npm start
+```
+
+#### Details
+
+Necessary dependencies are saved in `package.json` and a Yarn lockfile is
+provided. Install with
+```
+yarn install
+```
+or if Yarn is not available,
+```
+npm install
+```
+
+The project uses a Grunt task to preprocess images, generating both JPG and WEBP
+at 400px and 800px. To perform this conversion run
+```
+grunt
+```
+
+A simple Express static webserver is provided in `server.js`. To run the site on
+`localhost:3000`, run
+```
+yarn start
+```
+or
+```
+npm start
+```
+
+The project also supports build and hosting on Heroku. The Grunt task is run
+automatically as a `postinstall` step and the Node server is run in `Procfile`.
+To set up on Heroku, simply run
+```
+heroku create [app_name]
+git push heroku master
+```
+
+### Intro
 
 For the **Restaurant Reviews** projects, you will incrementally convert a static webpage to a mobile-ready web application. In **Stage One**, you will take a static design that lacks accessibility and convert the design to be responsive on different sized displays and accessible for screen reader use. You will also add a service worker to begin the process of creating a seamless offline experience for your users.
 
