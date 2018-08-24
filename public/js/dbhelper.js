@@ -176,5 +176,13 @@ class DBHelper {
     return marker;
   } */
 
+  /**
+   * Alt text for restaurant image
+   */
+  static restaurantImageAltText(restaurant) {
+    if ('photograph_alt' in restaurant)
+      return restaurant.photograph_alt;
+    return restaurant.name;
+  }
 }
 
