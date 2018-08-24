@@ -34,7 +34,8 @@ at 400px and 800px. To perform this conversion run
 grunt
 ```
 
-A simple Express static webserver is provided in `server.js`. To run the site on
+After this build step the site can be served from `./public/`. A simple Express
+static webserver is provided for convenience. To serve the site on
 `localhost:3000`, run
 ```
 yarn start
