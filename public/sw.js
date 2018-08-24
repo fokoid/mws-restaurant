@@ -1,6 +1,7 @@
 const CACHE_VERSION = 9;
 const CACHE_PREFIX = 'restaurant-reviews';
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
+const IMG_CACHE_NAME = `${CACHE_PREFIX}-images`;
 const DB_PORT = '1337';
 
 const URL_LIST = [
@@ -34,5 +35,15 @@ const fetchDB = async request => {
 };
 
 const fetchImg = async request => {
-  return fetch(request);
+  // create standardized URL, with filetype and size removed
+  const url = (new URL(request.url)).pathname.replace(/-\d+\.(jpg|webp)$/, '');
+
+  const imgCache = await caches.open(IMG_CACHE_NAME);
+  let response = await imgCache.match(url);
+  if (!response) {
+    response = await fetch(request);
+    if (response.status === 200)
+      imgCache.put(url, response.clone());
+  }
+  return response;
 };
