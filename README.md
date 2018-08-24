@@ -44,6 +44,10 @@ or
 ```
 npm start
 ```
+or
+```
+node server.js
+```
 
 The project also supports build and hosting on Heroku. The Grunt task is run
 automatically as a `postinstall` step and the Node server is run in `Procfile`.
