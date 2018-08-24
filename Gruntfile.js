@@ -1,3 +1,4 @@
+/* eslint-env node */
 const path = require('path');
 const imageSrcDir = 'img_src/';
 const imageDir = path.join(__dirname, 'public', 'img');
