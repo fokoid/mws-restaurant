@@ -1,4 +1,4 @@
-const CACHE_VERSION = 7;
+const CACHE_VERSION = 8;
 const CACHE_PREFIX = 'restaurant-reviews';
 const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 const URL_LIST = [

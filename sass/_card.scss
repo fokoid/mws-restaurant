@@ -1,0 +1,46 @@
+@import 'vars';
+
+.card-container {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: start;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: $color-bg;
+  list-style: outside none none;
+  max-width: $width-max;
+
+  @media screen and (min-width: $width-minor) {
+    padding: 20px;
+  }
+}
+
+.card {
+  width: 100%;
+  background-color: white;
+  margin: 5px 5px 10px;
+  padding: 0;
+  border-radius: 25px 5px;
+  overflow: hidden;
+  display: block;
+
+  @media screen and (min-width: $width-minor) {
+    margin: 5px 5px 20px;
+  }
+
+  @media screen and (min-width: $width-mid) {
+    width: calc(50% - 2 * 10px);
+    margin: 10px;
+  }
+
+  @media screen and (min-width: $width-large) {
+    width: calc(33% - 2 * 10px);
+  }
+}
+
+.card-header {
+  background-color: $color-brand-dark;
+  color: white;
+  font-size: 1.2em;
+  padding: 10px 20px;
+}
