@@ -1,4 +1,6 @@
-const CACHE_NAME = 'restaurant-reviews-v6';
+const CACHE_VERSION = 7;
+const CACHE_PREFIX = 'restaurant-reviews';
+const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
 const URL_LIST = [
   '/',
   '/js/main.js',
@@ -25,7 +27,8 @@ self.addEventListener('fetch', event => void event.respondWith((async () => {
     } catch (err) {
       console.log(err);
     }
-    cache.put(event.request, response.clone());
+    if (response.status === 200)
+      cache.put(event.request, response.clone());
   }
   return response;
 })()));
