@@ -206,6 +206,22 @@ nav h1 a {
   }
 }
 
+/* ======================= Tab Skip Link ======================= */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 0;
+  background-color: var(--color-brand);
+  color: white;
+  padding-right: 10px;
+  z-index: 10000;
+}
+
+.skip-link:focus {
+  top: 0;
+  color: white;
+}
+
 /* ====================== Big Brand Button ======================= */
 .brand-button {
   display: inline-block;
