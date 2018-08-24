@@ -1,3 +1,4 @@
+/* eslint no-unused-vars: 0, no-undef: 0 */
 /**
  * Return the unique values in a list.
  */
@@ -56,7 +57,7 @@ class DBHelper {
     const restaurants = await DBHelper.fetchRestaurants();
     if (!restaurants)
       return null;
-    let results = restaurants
+    let results = restaurants;
     if (cuisine != 'all') { // filter by cuisine
       results = results.filter(r => r.cuisine_type == cuisine);
     }
@@ -103,16 +104,16 @@ class DBHelper {
   /**
    * Map marker for a restaurant.
    */
-   static mapMarkerForRestaurant(restaurant, map) {
-    // https://leafletjs.com/reference-1.3.0.html#marker  
-    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
-      {title: restaurant.name,
+  static mapMarkerForRestaurant(restaurant, map) {
+    // https://leafletjs.com/reference-1.3.0.html#marker
+    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng], {
+      title: restaurant.name,
       alt: restaurant.name,
       url: DBHelper.urlForRestaurant(restaurant)
-      })
-      marker.addTo(newMap);
+    });
+    marker.addTo(newMap);
     return marker;
-  } 
+  }
   /* static mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,

@@ -1,3 +1,4 @@
+/* eslint no-unused-vars: 0, no-undef: 0 */
 let restaurant;
 var newMap;
 
@@ -28,7 +29,7 @@ initMap = async () => {
   }).addTo(newMap);
   fillBreadcrumb();
   DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
-}
+};
 
 /* window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
@@ -64,7 +65,7 @@ fetchRestaurantFromURL = async () => {
   self.restaurant = restaurant;
   fillRestaurantHTML();
   return restaurant;
-}
+};
 
 /**
  * Create restaurant HTML and add it to the webpage
@@ -88,7 +89,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
-}
+};
 
 /**
  * Create restaurant picture + sources
@@ -96,7 +97,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 fillRestaurantPicture = (picture, restaurant) => {
   const sourceSizes = [
     '100vw'
-  ].join(', ')
+  ].join(', ');
   const sourceWidths = [400, 800];
   const sourceSet = format => sourceWidths.map(
     width => `${DBHelper.imageUrlForRestaurant(restaurant, width, format)} ${width}w`
@@ -118,7 +119,7 @@ fillRestaurantPicture = (picture, restaurant) => {
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = DBHelper.restaurantImageAltText(restaurant);
   picture.append(image);
-}
+};
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -138,7 +139,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 
     hours.appendChild(row);
   }
-}
+};
 
 /**
  * Create all reviews HTML and add them to the webpage.
@@ -157,7 +158,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
-}
+};
 
 /**
  * Create review HTML and add it to the webpage.
@@ -192,7 +193,7 @@ createReviewHTML = (review) => {
   li.appendChild(comments);
 
   return li;
-}
+};
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
@@ -205,7 +206,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
   // include it in case we make it a link in future.
   li.setAttribute('aria-current', 'page');
   breadcrumb.appendChild(li);
-}
+};
 
 /**
  * Get a parameter by name from page URL.
@@ -213,7 +214,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
 getParameterByName = (name, url) => {
   if (!url)
     url = window.location.href;
-  name = name.replace(/[\[\]]/g, '\\$&');
+  name = name.replace(/[[]]/g, '\\$&');
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
     results = regex.exec(url);
   if (!results)
@@ -221,4 +222,4 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
+};
