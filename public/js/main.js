@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', event => {
  * Fetch all neighborhoods and set their HTML.
  */
 fetchNeighborhoods = async () => {
-  self.neighborhoods = await DBHelper.fetchNeighborhoods();
+  self.neighborhoods = await DBHelper.fetchNeighborhoods(fillNeighborhoodsHTML);
   fillNeighborhoodsHTML();
 };
 
@@ -39,7 +39,7 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
  * Fetch all cuisines and set their HTML.
  */
 fetchCuisines = async () => {
-  self.cuisines = await DBHelper.fetchCuisines();
+  self.cuisines = await DBHelper.fetchCuisines(fillCuisinesHTML);
   fillCuisinesHTML();
 };
 
@@ -103,9 +103,11 @@ updateRestaurants = async () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  resetRestaurants(
-    await DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood)
-  );
+  resetRestaurants(await DBHelper.fetchRestaurantByCuisineAndNeighborhood(
+    cuisine,
+    neighborhood,
+    fillRestaurantsHTML
+  ));
   fillRestaurantsHTML();
 };
 
@@ -138,7 +140,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
-  addMarkersToMap();
+  addMarkersToMap(restaurants);
 };
 
 /**

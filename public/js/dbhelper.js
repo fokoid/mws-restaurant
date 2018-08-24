@@ -20,21 +20,52 @@ class DBHelper {
   /**
    * Fetch all restaurants, or a given restaurant (by its ID).
    */
-  static async fetchRestaurants(id='') {
-    try {
-      const response = await fetch(DBHelper.databaseUrl(id));
-      return await response.json();
-    } catch (err) {
-      console.log(`Request failed for restaurant ${id}.`, err);
-      return null;
+  static async fetchRestaurants({id, updateCallback} = {}) {
+    // first search the database
+    const db = await window.dbPromise;
+    const tx = db.transaction('restaurants');
+    const store = tx.objectStore('restaurants');
+
+    if (!id) {
+      const restaurants = await store.getAll();
+
+      fetch(DBHelper.databaseUrl()).then(async response => {
+        const networkData = await response.clone().json();
+        const db = await window.dbPromise;
+        const tx = db.transaction('restaurants', 'readwrite');
+        const store = tx.objectStore('restaurants');
+        networkData.forEach(async restaurant => {
+          store.put(restaurant);
+        });
+        updateCallback(await response.json());
+      });
+      return restaurants;
     }
+
+    const restaurantID = parseInt(id);
+    if (isNaN(restaurantID)) {
+      console.error('Bad ID', id);
+      return;
+    }
+
+    const restaurant = await store.get(restaurantID);
+    console.log(restaurant);
+    const networkPromise = fetch(DBHelper.databaseUrl(id)).
+      then(async response => {
+        const db = await window.dbPromise;
+        const tx = db.transaction('restaurants', 'readwrite');
+        const store = tx.objectStore('restaurants');
+        store.put(await response.clone().json());
+        return await response.json();
+      });
+    return restaurant || await networkPromise;
   }
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.
    */
-  static async fetchRestaurantByCuisine(cuisine) {
-    const restaurants = await DBHelper.fetchRestaurants();
+  static async fetchRestaurantByCuisine(cuisine, updateCallback) {
+    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
     if (!restaurants)
       return null;
     return restaurants.filter(r => r.cuisine_type == cuisine);
@@ -43,8 +74,8 @@ class DBHelper {
   /**
    * Fetch restaurants by a neighborhood with proper error handling.
    */
-  static async fetchRestaurantByNeighborhood(neighborhood) {
-    const restaurants = await DBHelper.fetchRestaurants();
+  static async fetchRestaurantByNeighborhood(neighborhood, updateCallback)  {
+    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
     if (!restaurants)
       return null;
     return restaurants.filter(r => r.neighborhood == neighborhood);
@@ -53,8 +84,8 @@ class DBHelper {
   /**
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
-  static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood) {
-    const restaurants = await DBHelper.fetchRestaurants();
+  static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, updateCallback) {
+    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
     if (!restaurants)
       return null;
     let results = restaurants;
@@ -70,8 +101,8 @@ class DBHelper {
   /**
    * Fetch all neighborhoods with proper error handling.
    */
-  static async fetchNeighborhoods() {
-    const restaurants = await DBHelper.fetchRestaurants();
+  static async fetchNeighborhoods(updateCallback) {
+    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
     if (!restaurants)
       return null;
     return unique(restaurants.map(({neighborhood}) => neighborhood));
@@ -80,8 +111,8 @@ class DBHelper {
   /**
    * Fetch all cuisines with proper error handling.
    */
-  static async fetchCuisines() {
-    const restaurants = await DBHelper.fetchRestaurants();
+  static async fetchCuisines(updateCallback) {
+    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
     if (!restaurants)
       return null;
     return unique(restaurants.map(({cuisine_type}) => cuisine_type));

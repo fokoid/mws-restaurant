@@ -5,7 +5,7 @@ var newMap;
 /**
  * Initialize map as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', event => {
   initMap();
 });
 
@@ -56,12 +56,13 @@ fetchRestaurantFromURL = async () => {
   }
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
-    console.log('No restaurant id in URL');
+    console.error('No restaurant id in URL');
     return null;
   }
-  const restaurant = await DBHelper.fetchRestaurants(id);
-  if (!restaurant)
-    return;
+  const restaurant = await DBHelper.fetchRestaurants({id});
+  if (!restaurant) {
+    console.error('No restaurant data received.');
+  }
   self.restaurant = restaurant;
   fillRestaurantHTML();
   return restaurant;
