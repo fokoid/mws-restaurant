@@ -13,7 +13,7 @@
 ```
 yarn install
 grunt
-npm start
+yarn start
 ```
 
 #### Details
