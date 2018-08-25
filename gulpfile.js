@@ -7,14 +7,21 @@ const responsive = require('gulp-responsive');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const eslint = require('gulp-eslint');
+const bs = require('browser-sync');
+
+const port = 3000;
+const url = `http://localhost:${port}`;
 
 const srcDir = 'src';
 const distDir = 'public';
+
+const htmlPattern = path.join(distDir, '**/*.html');
 
 const sassPattern = path.join(srcDir, 'sass', '**/*.scss');
 const cssDir = path.join(distDir, 'css');
 
 const jsPattern = path.join(distDir, 'js/**/*.js');
+const swPattern = path.join(distDir, 'sw.js');
 
 const imagePattern = path.join(srcDir, 'img', '**/*.jpg');
 const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.png');
@@ -30,7 +37,8 @@ gulp.task('sass', ['sass:clean', 'sass:mkdir'], () => {
     pipe(autoprefixer({
       'browsers': ['last 2 versions']
     })).
-    pipe(gulp.dest(cssDir));
+    pipe(gulp.dest(cssDir)).
+    pipe(bs.stream());
 });
 
 gulp.task('images', [
@@ -73,7 +81,13 @@ gulp.task('eslint', () => {
     pipe(eslint.failOnError());
 });
 
-gulp.task('watchSass', ['sass'], () => void gulp.watch(sassPattern, ['sass']));
-
 gulp.task('build', ['eslint', 'sass', 'images']);
-gulp.task('default', ['build']);
+gulp.task('serve', ['build'], () => {
+  bs.init({
+    proxy: url
+  });
+  gulp.watch(sassPattern, ['sass']);
+  gulp.watch([htmlPattern, jsPattern, swPattern]).on('change', bs.reload);
+});
+
+gulp.task('default', ['serve']);

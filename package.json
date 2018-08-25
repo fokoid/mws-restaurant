@@ -4,7 +4,7 @@
   "description": "The MWS Nanodegree restaurant review app project",
   "main": "server.js",
   "scripts": {
-    "postinstall": "gulp"
+    "postinstall": "gulp build"
   },
   "repository": "https://github.com/thornecc/mws-restaurant-stage-1",
   "author": "Alex Thorne <alex@thorne.io>",
@@ -13,6 +13,7 @@
     "express": "^4.16.3"
   },
   "devDependencies": {
+    "browser-sync": "^2.24.6",
     "del": "^3.0.0",
     "eslint": "^5.4.0",
     "gulp": "^3.9.1",
