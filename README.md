@@ -12,9 +12,10 @@
 
 ```
 yarn install
-grunt
+gulp
 yarn start
 ```
+Of course, one must also start the database server separately.
 
 #### Details
 
@@ -28,10 +29,10 @@ or if Yarn is not available,
 npm install
 ```
 
-The project uses a Grunt task to preprocess images, generating both JPG and WEBP
-at 400px and 800px. To perform this conversion run
+The project uses Gulp to automate generation of responsive images, SASS
+preprocessing and other build tasks. These can be run with
 ```
-grunt
+gulp
 ```
 
 After this build step the site can be served from `./public/`. A simple Express
