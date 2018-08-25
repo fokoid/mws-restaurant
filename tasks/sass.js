@@ -17,7 +17,7 @@ module.exports = ({gulp, config}) => {
 
   gulp.task('sass:build', gulp.series('sass:clean', 'sass:mkdir', () => {
     return gulp.src(config.patterns.sass).
-      pipe(sass().on('error', sass.logError)).
+      pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError)).
       pipe(autoprefixer({
         'browsers': ['last 2 versions']
       })).
