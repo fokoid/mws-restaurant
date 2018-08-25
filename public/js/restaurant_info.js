@@ -59,7 +59,7 @@ fetchRestaurantFromURL = async () => {
     console.error('No restaurant id in URL');
     return null;
   }
-  const restaurant = await DBHelper.fetchRestaurants({id});
+  const restaurant = await DBHelper.fetchRestaurants({id, updateCallback: fillRestaurantHTML});
   if (!restaurant) {
     console.error('No restaurant data received.');
   }
@@ -72,6 +72,7 @@ fetchRestaurantFromURL = async () => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  console.log('Filling');
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -96,6 +97,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  * Create restaurant picture + sources
  */
 fillRestaurantPicture = (picture, restaurant) => {
+  picture.innerHTML = '';
+
   const sourceSizes = [
     '(min-width: 1024px) 492px',
     '(min-width: 768px) 50vw',
@@ -130,6 +133,7 @@ fillRestaurantPicture = (picture, restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
+  hours.innerHTML = '';
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -158,6 +162,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     return;
   }
   const ul = document.getElementById('reviews-list');
+  ul.innerHTML = '';
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });

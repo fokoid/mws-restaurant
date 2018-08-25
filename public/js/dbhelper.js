@@ -56,6 +56,10 @@ class DBHelper {
         const tx = db.transaction('restaurants', 'readwrite');
         const store = tx.objectStore('restaurants');
         store.put(await response.clone().json());
+        // if we hit a match in the cache, we should reload to ensure any
+        // updated information is present
+        if (restaurant && updateCallback)
+          updateCallback(await response.clone().json());
         return await response.json();
       });
     return restaurant || await networkPromise;
@@ -85,37 +89,52 @@ class DBHelper {
    * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
    */
   static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, updateCallback) {
-    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
+    const filterRestaurants = restaurants => {
+      let results = restaurants;
+      if (cuisine != 'all') { // filter by cuisine
+        results = results.filter(r => r.cuisine_type == cuisine);
+      }
+      if (neighborhood != 'all') { // filter by neighborhood
+        results = results.filter(r => r.neighborhood == neighborhood);
+      }
+      return results;
+    };
+    const restaurants = await DBHelper.fetchRestaurants({
+      updateCallback: restaurants => updateCallback(filterRestaurants(restaurants))
+    });
     if (!restaurants)
-      return null;
-    let results = restaurants;
-    if (cuisine != 'all') { // filter by cuisine
-      results = results.filter(r => r.cuisine_type == cuisine);
-    }
-    if (neighborhood != 'all') { // filter by neighborhood
-      results = results.filter(r => r.neighborhood == neighborhood);
-    }
-    return results;
+      return [];
+    return filterRestaurants(restaurants);
   }
 
   /**
    * Fetch all neighborhoods with proper error handling.
    */
   static async fetchNeighborhoods(updateCallback) {
-    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
-    if (!restaurants)
-      return null;
-    return unique(restaurants.map(({neighborhood}) => neighborhood));
+    const getNeighborhoods = restaurants => {
+      if (!restaurants)
+        return [];
+      return unique(restaurants.map(({neighborhood}) => neighborhood));
+    };
+    const restaurants = await DBHelper.fetchRestaurants({
+      updateCallback: restaurants => updateCallback(getNeighborhoods(restaurants))
+    });
+    return getNeighborhoods(restaurants);
   }
 
   /**
    * Fetch all cuisines with proper error handling.
    */
   static async fetchCuisines(updateCallback) {
-    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
-    if (!restaurants)
-      return null;
-    return unique(restaurants.map(({cuisine_type}) => cuisine_type));
+    const getCuisines = restaurants => {
+      if (!restaurants)
+        return [];
+      return unique(restaurants.map(({cuisine_type}) => cuisine_type));
+    };
+    const restaurants = await DBHelper.fetchRestaurants({
+      updateCallback: restaurants => updateCallback(getCuisines(restaurants))
+    });
+    return getCuisines(restaurants);
   }
 
   /**
