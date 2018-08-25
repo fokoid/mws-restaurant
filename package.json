@@ -16,11 +16,11 @@
     "browser-sync": "^2.24.6",
     "del": "^3.0.0",
     "eslint": "^5.4.0",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-autoprefixer": "^5.0.0",
     "gulp-eslint": "^5.0.0",
     "gulp-responsive": "^2.11.0",
     "gulp-sass": "^4.0.1",
-    "mkdirp": "^0.5.1"
+    "merge-stream": "^1.0.1"
   }
 }
