@@ -30,7 +30,8 @@ npm install
 ```
 
 The project uses Gulp to automate generation of responsive images, SASS
-preprocessing and other build tasks. These can be run with
+preprocessing and other build tasks. These are automatically run as a
+postinstall step after `yarn install`, but can be run manually with
 ```
 gulp
 ```
