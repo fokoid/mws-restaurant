@@ -21,7 +21,7 @@ const imageDir = path.join(distDir, 'img');
 const imageSizes = [400, 800];
 const imageQuality = 50;
 
-gulp.task('sass:clean', () => del([cssDir]));
+gulp.task('sass:clean', () => del.sync([cssDir]));
 gulp.task('sass:mkdir', () => mkdirp(cssDir));
 gulp.task('sass', ['sass:clean', 'sass:mkdir'], () => {
   return gulp.src(sassPattern).
@@ -38,7 +38,7 @@ gulp.task('images', [
   'images:responsive',
   'images:icons'
 ]);
-gulp.task('images:clean', () => del([imageDir]));
+gulp.task('images:clean', () => del.sync([imageDir]));
 gulp.task('images:mkdir', () => mkdirp(imageDir));
 gulp.task('images:responsive', () => {
   const sizes = format => imageSizes.map(size => ({
@@ -74,4 +74,5 @@ gulp.task('eslint', () => {
 
 gulp.task('watchSass', ['sass'], () => void gulp.watch(sassPattern, ['sass']));
 
-gulp.task('default', ['watchSass', 'eslint']);
+gulp.task('build', ['eslint', 'sass', 'images']);
+gulp.task('default', ['build']);
