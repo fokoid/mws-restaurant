@@ -1,4 +1,4 @@
-const CACHE_VERSION = 30;
+const CACHE_VERSION = 31;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
@@ -6,6 +6,7 @@ const URL_LIST = [
   '/',
   '/restaurant.html',
   '/js/main.js',
+  '/js/restaurant_info.js',
   '/css/styles.css',
   '/manifest.json'
 ];
