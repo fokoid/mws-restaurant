@@ -15,6 +15,7 @@ const imagePattern = path.join(srcDir, 'img', '**/*.jpg');
 const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.png');
 
 module.exports = {
+  dirname: __dirname,
   srcDir,
   distDir,
   server: { port, url },

@@ -6,6 +6,8 @@ const mkdir = promisify(fs.mkdir);
 const del = require('del');
 const eslint = require('gulp-eslint');
 const concat = require('gulp-concat');
+const uglify = require('gulp-uglify-es').default;
+const merge = require('merge-stream');
 
 module.exports = ({gulp, config}) => {
   const jsDir = path.join(config.distDir, 'js');
@@ -20,29 +22,36 @@ module.exports = ({gulp, config}) => {
   gulp.task('js:clean', () => del([jsDir]));
   gulp.task('js:mkdir', gulp.series('js:clean', () => mkdir(jsDir)));
 
-  const jsTask = name => {
-    gulp.task(`js:${name}`, () => {
+  const jsTask = ({name, dist = false}) => {
+    gulp.task(`js:${name}${dist?':dist':''}`, () => {
       const files = [
         'idb.js',
         'shared.js',
         'dbhelper.js',
         `${name}.js`
       ].map(file => path.join(config.srcDir, 'js', file));
-      return gulp.src(files).
-        pipe(concat(`${name}.js`)).
-        pipe(gulp.dest(jsDir));
+      let stream = gulp.src(files).pipe(concat(`${name}.js`));
+      if (dist)
+        stream = stream.pipe(uglify());
+      return stream.pipe(gulp.dest(jsDir));
     });
   };
-  jsTask('main');
-  jsTask('restaurant_info');
+  jsTask({name: 'main', dist: false});
+  jsTask({name: 'main', dist: true});
+  jsTask({name: 'restaurant_info', dist: false});
+  jsTask({name: 'restaurant_info', dist: true});
 
-  gulp.task('js:scripts', gulp.series(
-    'js:mkdir',
-    gulp.parallel(
-      'js:main',
-      'js:restaurant_info'
-    )
-  ));
+  const jsTaskAll = ({dist = false}) => {
+    gulp.task(`js:scripts${dist?':dist':''}`, gulp.series(
+      'js:mkdir',
+      gulp.parallel(
+        `js:main${dist?':dist':''}`,
+        `js:restaurant_info${dist?':dist':''}`
+      )
+    ));
+  };
+  jsTaskAll({dist: false});
+  jsTaskAll({dist: true});
 
   gulp.task('sw:copy', () => {
     return gulp.src([config.patterns.sw]).
