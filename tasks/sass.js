@@ -7,6 +7,7 @@ const del = require('del');
 
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
+const sourcemaps = require('gulp-sourcemaps');
 const bs = require('browser-sync');
 
 module.exports = ({gulp, config}) => {
@@ -17,10 +18,12 @@ module.exports = ({gulp, config}) => {
 
   gulp.task('sass:build', gulp.series('sass:clean', 'sass:mkdir', () => {
     return gulp.src(config.patterns.sass).
+      pipe(sourcemaps.init()).
       pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError)).
       pipe(autoprefixer({
         'browsers': ['last 2 versions']
       })).
+      pipe(sourcemaps.write('.')).
       pipe(gulp.dest(cssDir)).
       pipe(bs.stream());
   }));

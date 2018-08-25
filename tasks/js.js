@@ -7,7 +7,7 @@ const del = require('del');
 const eslint = require('gulp-eslint');
 const concat = require('gulp-concat');
 const uglify = require('gulp-uglify-es').default;
-const merge = require('merge-stream');
+const sourcemaps = require('gulp-sourcemaps');
 
 module.exports = ({gulp, config}) => {
   const jsDir = path.join(config.distDir, 'js');
@@ -30,10 +30,14 @@ module.exports = ({gulp, config}) => {
         'dbhelper.js',
         `${name}.js`
       ].map(file => path.join(config.srcDir, 'js', file));
-      let stream = gulp.src(files).pipe(concat(`${name}.js`));
+      let stream = gulp.src(files).
+        pipe(sourcemaps.init()).
+        pipe(concat(`${name}.js`));
       if (dist)
         stream = stream.pipe(uglify());
-      return stream.pipe(gulp.dest(jsDir));
+      return stream.
+        pipe(sourcemaps.write('.')).
+        pipe(gulp.dest(jsDir));
     });
   };
   jsTask({name: 'main', dist: false});
