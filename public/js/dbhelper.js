@@ -21,6 +21,10 @@ class DBHelper {
    * Fetch all restaurants, or a given restaurant (by its ID).
    */
   static async fetchRestaurants({id, updateCallback} = {}) {
+    if (!('serviceWorker' in navigator)) {
+      // no serviceworker, no caching. just fetch from the network
+      return await fetch(DBHelper.databaseUrl(id));
+    }
     // first search the database
     const db = await window.dbPromise;
     const tx = db.transaction('restaurants');
