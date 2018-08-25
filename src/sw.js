@@ -1,4 +1,4 @@
-const CACHE_VERSION = 26;
+const CACHE_VERSION = 27;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
