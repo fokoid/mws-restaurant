@@ -42,7 +42,7 @@ class DBHelper {
           store.put(restaurant);
         });
         updateCallback(await response.json());
-      });
+      }).catch(err => void console.error('Failed to fetch:', err));
       return restaurants;
     }
 
@@ -65,7 +65,11 @@ class DBHelper {
           updateCallback(await response.clone().json());
         return await response.json();
       });
-    return restaurant || await networkPromise;
+    try {
+      return restaurant || await networkPromise;
+    } catch (err) {
+      console.error('Failed to fetch:', err);
+    }
   }
 
   /**
