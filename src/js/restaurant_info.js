@@ -3,16 +3,9 @@ let restaurant;
 var newMap;
 
 /**
- * Initialize map as soon as the page is loaded.
- */
-document.addEventListener('DOMContentLoaded', event => {
-  initMap();
-});
-
-/**
  * Initialize leaflet map
  */
-initMap = async () => {
+const initMap = async () => {
   const restaurant = await fetchRestaurantFromURL();
   self.newMap = L.map('map', {
     center: [restaurant.latlng.lat, restaurant.latlng.lng],
@@ -31,26 +24,10 @@ initMap = async () => {
   DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
 };
 
-/* window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: restaurant.latlng,
-        scrollwheel: false
-      });
-      fillBreadcrumb();
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-    }
-  });
-} */
-
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromURL = async () => {
+const fetchRestaurantFromURL = async () => {
   if (self.restaurant) { // restaurant already fetched!
     return self.restaurant;
   }
@@ -71,7 +48,7 @@ fetchRestaurantFromURL = async () => {
 /**
  * Create restaurant HTML and add it to the webpage
  */
-fillRestaurantHTML = (restaurant = self.restaurant) => {
+const fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -95,7 +72,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Create restaurant picture + sources
  */
-fillRestaurantPicture = (picture, restaurant) => {
+const fillRestaurantPicture = (picture, restaurant) => {
   picture.innerHTML = '';
 
   const sourceSizes = [
@@ -130,7 +107,7 @@ fillRestaurantPicture = (picture, restaurant) => {
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
+const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
   hours.innerHTML = '';
   for (let key in operatingHours) {
@@ -151,7 +128,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const container = document.getElementById('reviews-container');
 
   if (!reviews) {
@@ -171,7 +148,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHTML = (review) => {
+const createReviewHTML = (review) => {
   const li = document.createElement('li');
   li.classList.add('card', 'review');
 
@@ -206,7 +183,7 @@ createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+const fillBreadcrumb = (restaurant=self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
@@ -219,7 +196,7 @@ fillBreadcrumb = (restaurant=self.restaurant) => {
 /**
  * Get a parameter by name from page URL.
  */
-getParameterByName = (name, url) => {
+const getParameterByName = (name, url) => {
   if (!url)
     url = window.location.href;
   name = name.replace(/[[]]/g, '\\$&');
@@ -231,3 +208,10 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 };
+
+/**
+ * Initialize map as soon as the page is loaded.
+ */
+document.addEventListener('DOMContentLoaded', event => {
+  initMap();
+});

@@ -6,20 +6,9 @@ var newMap;
 var markers = [];
 
 /**
- * Fetch neighborhoods and cuisines as soon as the page is loaded.
- */
-document.addEventListener('DOMContentLoaded', async event => {
-  await Promise.all([
-    fetchNeighborhoods(),
-    fetchCuisines()
-  ]);
-  initMap(); // added
-});
-
-/**
  * Fetch all neighborhoods and set their HTML.
  */
-fetchNeighborhoods = async () => {
+const fetchNeighborhoods = async () => {
   self.neighborhoods = await DBHelper.fetchNeighborhoods(fillNeighborhoodsHTML);
   fillNeighborhoodsHTML();
 };
@@ -27,9 +16,9 @@ fetchNeighborhoods = async () => {
 /**
  * Set neighborhoods HTML.
  */
-fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
+const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
-  currentValues = Array.from(select.children).map(option => option.innerHTML);
+  const currentValues = Array.from(select.children).map(option => option.innerHTML);
 
   neighborhoods.forEach(neighborhood => {
     if (!currentValues.includes(neighborhood)) {
@@ -44,7 +33,7 @@ fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
 /**
  * Fetch all cuisines and set their HTML.
  */
-fetchCuisines = async () => {
+const fetchCuisines = async () => {
   self.cuisines = await DBHelper.fetchCuisines(fillCuisinesHTML);
   fillCuisinesHTML();
 };
@@ -52,9 +41,9 @@ fetchCuisines = async () => {
 /**
  * Set cuisines HTML.
  */
-fillCuisinesHTML = (cuisines = self.cuisines) => {
+const fillCuisinesHTML = (cuisines = self.cuisines) => {
   const select = document.getElementById('cuisines-select');
-  currentValues = Array.from(select.children).map(option => option.innerHTML);
+  const currentValues = Array.from(select.children).map(option => option.innerHTML);
 
   cuisines.forEach(cuisine => {
     if (!currentValues.includes(cuisine)) {
@@ -69,7 +58,7 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 /**
  * Initialize leaflet map, called from HTML.
  */
-initMap = () => {
+const initMap = () => {
   self.newMap = L.map('map', {
     center: [40.722216, -73.987501],
     zoom: 12,
@@ -86,23 +75,11 @@ initMap = () => {
 
   updateRestaurants();
 };
-/* window.initMap = () => {
-  let loc = {
-    lat: 40.722216,
-    lng: -73.987501
-  };
-  self.map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: loc,
-    scrollwheel: false
-  });
-  updateRestaurants();
-} */
 
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = async () => {
+const updateRestaurants = async () => {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -126,7 +103,7 @@ updateRestaurants = async () => {
 /**
  * Clear current restaurants, their HTML and remove their map markers.
  */
-resetRestaurants = (restaurants) => {
+const resetRestaurants = (restaurants) => {
   // Remove all restaurants
   self.restaurants = [];
 
@@ -147,7 +124,7 @@ resetRestaurants = (restaurants) => {
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
-fillRestaurantsHTML = (restaurants = self.restaurants) => {
+const fillRestaurantsHTML = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
@@ -158,7 +135,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 /**
  * Create restaurant HTML.
  */
-createRestaurantHTML = (restaurant) => {
+const createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   li.classList.add('card');
 
@@ -192,7 +169,7 @@ createRestaurantHTML = (restaurant) => {
 /**
  * Create restaurant picture + sources
  */
-createRestaurantPicture = (restaurant) => {
+const createRestaurantPicture = (restaurant) => {
   const picture = document.createElement('picture');
 
   const sourceSizes = [
@@ -229,7 +206,7 @@ createRestaurantPicture = (restaurant) => {
 /**
  * Add markers for current restaurants to the map.
  */
-addMarkersToMap = (restaurants = self.restaurants) => {
+const addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
@@ -241,14 +218,15 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 
 };
-/* addMarkersToMap = (restaurants = self.restaurants) => {
-  restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
-  });
-} */
+
+/**
+ * Fetch neighborhoods and cuisines as soon as the page is loaded.
+ */
+document.addEventListener('DOMContentLoaded', async event => {
+  await Promise.all([
+    fetchNeighborhoods(),
+    fetchCuisines()
+  ]);
+  initMap(); // added
+});
 
