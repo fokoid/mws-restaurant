@@ -1,12 +1,11 @@
 /* eslint-env node */
-const path = require('path');
-const del = require('del');
-const fs = require('fs');
-const {promisify} = require('util');
-const mkdir = promisify(fs.mkdir);
-const responsive = require('gulp-responsive');
-
-module.exports = ({gulp, config}) => {
+module.exports = ({gulp, config, imports}) => {
+  const {
+    path,
+    del,
+    mkdir,
+    responsive
+  } = imports;
   const imgDir = path.join(config.distDir, 'img');
 
   gulp.task('images:clean', () => del([imgDir]));

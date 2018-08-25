@@ -1,16 +1,14 @@
 /* eslint-env node */
-const path = require('path');
-const {promisify} = require('util');
-const fs = require('fs');
-const mkdir = promisify(fs.mkdir);
-const del = require('del');
-
-const sass = require('gulp-sass');
-const autoprefixer = require('gulp-autoprefixer');
-const sourcemaps = require('gulp-sourcemaps');
-const bs = require('browser-sync');
-
-module.exports = ({gulp, config}) => {
+module.exports = ({gulp, config, imports}) => {
+  const {
+    path,
+    del,
+    mkdir,
+    sourcemaps,
+    sass,
+    autoprefixer,
+    browserSync
+  } = imports;
   const cssDir = path.join(config.distDir, 'css');
 
   gulp.task('sass:clean', () => del([cssDir]));
@@ -25,7 +23,7 @@ module.exports = ({gulp, config}) => {
       })).
       pipe(sourcemaps.write('.')).
       pipe(gulp.dest(cssDir)).
-      pipe(bs.stream());
+      pipe(browserSync.stream());
   }));
 
   gulp.task('sass', gulp.series('sass:build'));

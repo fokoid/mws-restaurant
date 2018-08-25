@@ -1,13 +1,10 @@
 /* eslint-env node */
-const path = require('path');
-const merge = require('merge-stream');
-
-module.exports = ({gulp, config}) => {
+module.exports = ({gulp, config, imports}) => {
+  const {path, merge} = imports;
   const srcFiles = [
     'favicon.ico',
     'manifest.json'
   ].map(file => path.join(config.srcDir, file));
-
 
   gulp.task('misc:copy', () => {
     const streams = srcFiles.map(srcFile => {

@@ -1,15 +1,14 @@
 /* eslint-env node */
-const path = require('path');
-const {promisify} = require('util');
-const fs = require('fs');
-const mkdir = promisify(fs.mkdir);
-const del = require('del');
-const eslint = require('gulp-eslint');
-const concat = require('gulp-concat');
-const uglify = require('gulp-uglify-es').default;
-const sourcemaps = require('gulp-sourcemaps');
-
-module.exports = ({gulp, config}) => {
+module.exports = ({gulp, config, imports}) => {
+  const {
+    path,
+    del,
+    mkdir,
+    eslint,
+    sourcemaps,
+    concat,
+    uglifyES
+  } = imports;
   const jsDir = path.join(config.distDir, 'js');
 
   gulp.task('js:eslint', () => {
@@ -34,7 +33,7 @@ module.exports = ({gulp, config}) => {
         pipe(sourcemaps.init()).
         pipe(concat(`${name}.js`));
       if (dist)
-        stream = stream.pipe(uglify());
+        stream = stream.pipe(uglifyES());
       return stream.
         pipe(sourcemaps.write('.')).
         pipe(gulp.dest(jsDir));
