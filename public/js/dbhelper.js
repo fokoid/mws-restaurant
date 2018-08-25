@@ -53,7 +53,6 @@ class DBHelper {
     }
 
     const restaurant = await store.get(restaurantID);
-    console.log(restaurant);
     const networkPromise = fetch(DBHelper.databaseUrl(id)).
       then(async response => {
         const db = await window.dbPromise;

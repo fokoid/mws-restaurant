@@ -72,7 +72,6 @@ fetchRestaurantFromURL = async () => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
-  console.log('Filling');
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
