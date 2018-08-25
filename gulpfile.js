@@ -8,15 +8,16 @@ const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
 const eslint = require('gulp-eslint');
 
+const srcDir = 'src';
 const distDir = 'public';
 
-const sassPattern = 'sass/**/*.scss';
+const sassPattern = path.join(srcDir, 'sass', '**/*.scss');
 const cssDir = path.join(distDir, 'css');
 
 const jsPattern = path.join(distDir, 'js/**/*.js');
 
-const imagePattern = 'img_src/**/*.jpg';
-const iconPattern = 'img_src/fixed/**/*.png';
+const imagePattern = path.join(srcDir, 'img', '**/*.jpg');
+const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.png');
 const imageDir = path.join(distDir, 'img');
 const imageSizes = [400, 800];
 const imageQuality = 50;
