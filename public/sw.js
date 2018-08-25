@@ -1,7 +1,7 @@
-const CACHE_VERSION = 17;
-const CACHE_PREFIX = 'restaurant-reviews';
-const CACHE_NAME = `${CACHE_PREFIX}-v${CACHE_VERSION}`;
-const IMG_CACHE_NAME = `${CACHE_PREFIX}-images`;
+const CACHE_VERSION = 20;
+const CACHE_PREFIX = 'restaurant-reviews-';
+const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
+const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
 const URL_LIST = [
   '/',
   '/restaurant.html',
@@ -16,7 +16,16 @@ const URL_LIST = [
 
 self.addEventListener('install', event => void event.waitUntil((async () => {
   const cache = await caches.open(CACHE_NAME);
-  await cache.addAll(URL_LIST);
+  return await cache.addAll(URL_LIST);
+})()));
+
+self.addEventListener('activate', event => void event.waitUntil((async() => {
+  const cacheNames = await caches.keys();
+  const liveCacheNames = [CACHE_NAME, IMG_CACHE_NAME];
+  const deadCacheNames = cacheNames.
+    filter(cacheName => cacheName.startsWith(CACHE_PREFIX)).
+    filter(cacheName => !liveCacheNames.includes(cacheName));
+  return await Promise.all(deadCacheNames.map(cacheName => caches.delete(cacheName)));
 })()));
 
 self.addEventListener('fetch', event => void event.respondWith((async () => {
