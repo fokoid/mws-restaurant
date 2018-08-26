@@ -25,7 +25,7 @@ export default class Restaurant {
   }
 
   makeCardHTML() {
-    li = document.createElement('li');
+    const li = document.createElement('li');
 
     li.id = `restaurant-card-${this._data.id}`;
     li.classList.add('card');
