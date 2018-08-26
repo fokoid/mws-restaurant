@@ -124,6 +124,7 @@ export default class DBHelper {
   }
 
   getReviewsForRestaurant({restaurant_id, callback}) {
+    if (!restaurant_id) return [];
     return this.fetch({storeName: 'reviews', restaurant_id, callback});
   }
 
@@ -170,42 +171,4 @@ export default class DBHelper {
   getCuisines({callback} = {}) {
     return this.getPropertyValues({property: 'cuisine_type', callback});
   }
-
-  /**
-   * Restaurant page URL.
-   */
-  static urlForRestaurant(restaurant) {
-    return (`./restaurant.html?id=${restaurant.id}`);
-  }
-
-  /**
-   * Restaurant image URL.
-   */
-  static imageUrlForRestaurant(restaurant, width=800, format='jpg') {
-    return (`/img/${restaurant.photograph}-${width}.${format}`);
-  }
-
-  /**
-   * Alt text for restaurant image
-   */
-  static imageAltTextForRestaurant(restaurant) {
-    if ('photograph_alt' in restaurant)
-      return restaurant.photograph_alt;
-    return restaurant.name;
-  }
-
-  /**
-   * Map marker for a restaurant.
-   */
-  static mapMarkerForRestaurant(restaurant, newMap) {
-    // https://leafletjs.com/reference-1.3.0.html#marker
-    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng], {
-      title: restaurant.name,
-      alt: restaurant.name,
-      url: this.urlForRestaurant(restaurant)
-    });
-    marker.addTo(newMap);
-    return marker;
-  }
-
 }
