@@ -141,7 +141,7 @@ export default class Restaurant {
   }
 
   get mapMarker() {
-    if (!this._mapMaker) {
+    if (!this._mapMarker) {
       this._mapMarker = new L.marker( /* eslint no-undef: 0 */
         [this._data.latlng.lat, this._data.latlng.lng], {
           title: this.name,
