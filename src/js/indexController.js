@@ -1,6 +1,9 @@
 import DBHelper from '/js/dbhelper.js';
 import Restaurant from '/js/restaurant.js';
 
+const unique = ls => ls.filter((v, i) => ls.indexOf(v) == i);
+const extractProp = prop => ls => unique(ls.map(x => x[prop]));
+
 export default class IndexController {
   constructor(container) {
     this._container = container;
@@ -12,55 +15,68 @@ export default class IndexController {
   }
 
   async _init() {
-    await Promise.all([
-      this._db.getNeighborhoods({
-        callback: this._fillNeighborhoodsHTML.bind(this)
-      }),
-      this._db.getCuisines({
-        callback: this._fillCuisinesHTML.bind(this)
-      })
-    ]);
+    this._db.getRestaurants({
+      callback: restaurants => {
+        this._data.restaurants = restaurants.map(data => new Restaurant({
+          data, favoriteCallback: x => this._db.setFavorite(x)
+        }));
+        this._updateContent();
+      }
+    });
     this._initMap();
+  }
+
+  _updateContent() {
+    this._fillNeighborhoodsHTML();
+    this._fillCuisinesHTML();
     this._updateRestaurants();
   }
 
-  _fillNeighborhoodsHTML(neighborhoods) {
-    if (!neighborhoods) return;
-    this._data.neighborhoods = neighborhoods;
+  _fillNeighborhoodsHTML() {
+    this._data.neighborhoods = extractProp('neighborhood')(this._data.restaurants);
+
     const select = document.getElementById('neighborhoods-select');
     select.onchange = () => this._updateRestaurants();
     const currentValues = Array.from(select.children).
       map(option => option.innerHTML);
-    neighborhoods.forEach(neighborhood => {
+    this._data.neighborhoods.forEach(neighborhood => {
       if (!currentValues.includes(neighborhood)) {
         const option = document.createElement('option');
         option.innerHTML = neighborhood;
         option.value = neighborhood;
-        select.append(option);
+        select.appendChild(option);
       }
     });
   }
 
-  _fillCuisinesHTML(cuisines) {
-    if (!cuisines) return;
-    this._data.cuisines = cuisines;
+  _fillCuisinesHTML() {
+    this._data.cuisines = extractProp('cuisine')(this._data.restaurants);
+
     const select = document.getElementById('cuisines-select');
     select.onchange = () => this._updateRestaurants();
     const currentValues = Array.from(select.children).
       map(option => option.innerHTML);
-    cuisines.forEach(cuisine => {
+    this._data.cuisines.forEach(cuisine => {
       if (!currentValues.includes(cuisine)) {
         const option = document.createElement('option');
         option.innerHTML = cuisine;
         option.value = cuisine;
-        select.append(option);
+        select.appendChild(option);
       }
     });
   }
 
+  _searchRestaurants({cuisine, neighborhood}) {
+    let results = this._data.restaurants;
+    if (cuisine && cuisine != 'all')
+      results = results.filter(restaurant => restaurant.cuisine === cuisine);
+    if (neighborhood && neighborhood != 'all')
+      results = results.filter(restaurant => restaurant.neighborhood === neighborhood);
+    return results;
+  }
+
   _clearRestaurants() {
     // clear restaurant cards and map markers
-    this._data.restaurants = [];
     const ul = document.getElementById('restaurants-list');
     ul.innerHTML = '';
 
@@ -81,26 +97,13 @@ export default class IndexController {
     const cuisine = cSelect[cIndex].value;
     const neighborhood = nSelect[nIndex].value;
 
-    return this._db.searchRestaurants({
-      cuisine,
-      neighborhood,
-      callback: this._fillRestaurantsHTML.bind(this)
-    });
+    this._fillRestaurantsHTML(this._searchRestaurants({cuisine, neighborhood}));
   }
 
   _fillRestaurantsHTML(restaurants) {
-    if (!restaurants || restaurants.length === 0) {
-      return;
-    }
-    const oldIDs = this._data.restaurants.map(restaurant => restaurant.id);
-    restaurants = restaurants.
-      filter(restaurant => !oldIDs.includes(restaurant.id));
-    const restaurantsToInsert = restaurants.map(data => new Restaurant(data));
-    this._data.restaurants = this._data.restaurants.concat(restaurantsToInsert);
-
     const ul = document.getElementById('restaurants-list');
-    restaurantsToInsert.forEach(restaurant => {
-      ul.append(restaurant.cardHTML);
+    restaurants.forEach(restaurant => {
+      ul.appendChild(restaurant.cardNode);
       restaurant.mapMarker.addTo(this._map);
       this._data.markers.push(restaurant.mapMarker);
     });

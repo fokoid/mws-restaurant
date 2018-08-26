@@ -17,12 +17,14 @@ export default class DBHelper {
       this._dbPromise = null;
       return;
     }
-    this._dbPromise = idb.open(name, 1, upgradeDB => { /* eslint no-undef: 0 */
+    this._dbPromise = idb.open(name, 2, upgradeDB => { /* eslint no-undef: 0 */
       switch (upgradeDB.oldVersion) {
         case 0:
           upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
           upgradeDB.createObjectStore('reviews', { keyPath: 'id' }).
             createIndex('by-restaurant', 'restaurant_id');
+        case 1: /* eslint no-fallthrough: 0 */
+          upgradeDB.createObjectStore('pendingFavorites', { keyPath: 'id' });
       }
     });
   }
@@ -87,7 +89,22 @@ export default class DBHelper {
   }
 
   /**
-   * Main fetch methods.
+   * Main fetch method. Pulls data from database for speed/offline first and
+   * then goes to network to check for updates.
+   *
+   * The callback will be called twice: once on the local data and then again on
+   * the network response (if it succeeds).
+   *
+   * The return value is a promise which resolves to the local response, or the
+   * network response if no local response exists.
+   *
+   * After a successful network fetch, at attempt is made to reconcile any
+   * pending local transactions. This serves two purposes:
+   *  - syncing with remote server as soon as network is available
+   *  - ensuring pending changes are preserved in the local database and are not
+   *    overwritten by stale data from the network
+   * This reconciliation is performed before the second callback, to ensure that
+   * the final UI update uses the authoritative state.
    */
   async fetch({storeName, restaurant_id, id, callback}) {
     let queryUrl = `${this.origin}/${storeName}/`;
@@ -106,9 +123,10 @@ export default class DBHelper {
       if (response.status === 200) {
         this.put({
           storeName,
-          records: await response.clone().json()
+          records: await response.json()
         });
-        const result = await response.json();
+        await this._tryPending();
+        const result = await this.get({storeName, id});
         if (callback)
           callback(result);
         return result;
@@ -170,5 +188,88 @@ export default class DBHelper {
 
   getCuisines({callback} = {}) {
     return this.getPropertyValues({property: 'cuisine_type', callback});
+  }
+
+  async setFavorite({id, is_favorite}) {
+    // we do not use our network wrapping functions here:
+    // unlike reviews, we cannot PUT restaurants and so the network database
+    // cannot be generically kept in sync with the local database
+    //
+    // instead we make changes directly to the IDB store while also queueing a
+    // fetch to update the favorite status on the server
+    const {tx, store} = await this.open({storeName: 'restaurants', write: true});
+    const restaurant = await store.get(id);
+    restaurant.is_favorite = is_favorite;
+    store.put(restaurant);
+    this._setFavoriteNetwork({id, is_favorite});
+    return tx.complete;
+  }
+
+  async _setFavoriteNetwork({id, is_favorite}) {
+    if (! await this._setFavoriteNetworkFetch({id, is_favorite})) {
+      // remote save failed. we are probably offline so let's queue it for later
+      const {tx, store} = await this.open({storeName: 'pendingFavorites', write: true});
+      store.put({id, is_favorite});
+      return await tx.complete;
+    }
+  }
+
+  async _setFavoriteNetworkFetch({id, is_favorite}) {
+    const url = `${this.origin}/restaurants/${id}/?is_favorite=${is_favorite}`;
+    try {
+      const response = await fetch(url, {method: 'PUT'});
+      if (response.status !== 200)
+        throw new Error(`Failed to set is_favorite=${is_favorite} for restaurant ${id} on remote server.`);
+    } catch (err) {
+      console.log('Error setting favorite over network:', err);
+      return false;
+    }
+    return true;
+  }
+
+  async _applyPendingNetwork() {
+    const {tx, store} = await this.open({storeName: 'pendingFavorites'});
+    const networkPromises = [];
+    const changes = [];
+    store.iterateCursor(cursor => {
+      if (!cursor) return;
+      networkPromises.push(this._setFavoriteNetworkFetch(cursor.value));
+      changes.push(cursor.value);
+      cursor.continue();
+    });
+    await tx.complete;
+    const success = (await Promise.all(networkPromises)).every(x => x === true);
+    return {changes, success};
+  }
+
+  async _erasePending() {
+    const {tx, store} = await this.open({
+      storeName: 'pendingFavorites', write: true
+    });
+    store.clear();
+    return await tx.complete;
+  }
+
+  async _applyPendingLocal(changes) {
+    const {tx, store} = await this.open({
+      storeName: 'restaurants', write: true
+    });
+    changes.forEach(async ({id, is_favorite}) => {
+      const restaurant = await store.get(id);
+      restaurant.is_favorite = is_favorite;
+      store.put(restaurant);
+    });
+    return await tx.complete;
+  }
+
+  async _tryPending() {
+    const {success, changes} = await this._applyPendingNetwork();
+    if (success) {
+      // if we successfully reconciled with network, wipe pending transactions
+      // from IDB
+      await this._erasePending();
+    }
+    // either way, ensure pending changes are applied locally
+    return await this._applyPendingLocal(changes);
   }
 }

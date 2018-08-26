@@ -34,9 +34,12 @@ export default class RestaurantInfoController {
   }
 
   async _init() {
-    this._data.restaurant = new Restaurant(await this._db.getRestaurant({
-      id: this._data.id,
-    }));
+    this._data.restaurant = new Restaurant({
+      data: await this._db.getRestaurant({
+        id: this._data.id,
+      }),
+      favoriteCallback: args => this._db.setFavorite(args)
+    });
     this._fillBreadcrumbHTML();
     this._fillRestaurantHTML();
     this._db.getReviewsForRestaurant({

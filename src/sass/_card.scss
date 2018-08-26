@@ -23,6 +23,7 @@
   border-radius: 25px 5px;
   overflow: hidden;
   display: block;
+  position: relative;
 
   @media screen and (min-width: $width-minor) {
     margin: 5px 5px 20px;

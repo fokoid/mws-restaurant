@@ -1,0 +1,34 @@
+@import 'vars';
+
+.brand-button {
+  display: inline-block;
+  background-color: $color-brand;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  line-height: 48px;
+  min-height: 48px;
+  padding: 0;
+}
+
+.favorite {
+  color: rgba(255, 255, 255, 0.3);
+  position: absolute;
+  left: 20px;
+  z-index: 100;
+  appearance: none;
+  font-size: 64px;
+
+  &::before {
+    content: '♥';
+
+    &:hover {
+      color: rgba($color-brand, 0.3);
+    }
+  }
+
+  &:checked {
+    color: $color-brand;
+  }
+}

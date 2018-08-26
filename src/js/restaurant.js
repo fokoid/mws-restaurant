@@ -1,66 +1,93 @@
 export default class Restaurant {
-  constructor(data) {
+  constructor({data, favoriteCallback}) {
     this._data = data;
+    this._setFavorite = favoriteCallback;
   }
 
   get id() { return this._data.id; }
   get name() { return this._data.name; }
   get hours() { return this._data.operating_hours; }
   get address() { return this._data.address; }
+  get neighborhood() { return this._data.neighborhood; }
   get cuisine() { return this._data.cuisine_type; }
+  get isFavorite() {
+    return this._data.is_favorite === true || this._data.is_favorite === 'true';
+  }
 
-  get _url() { return `./restaurant.html?id=${this.id}`; }
-  get _imageAltText() {
+  get url() { return `./restaurant.html?id=${this.id}`; }
+  get imageAltText() {
     if ('photograph_alt' in this._data)
       return this._data.photograph_alt;
     return this.name;
   }
-  _imageUrl(width=800, format='jpg') {
+  imageUrl(width=800, format='jpg') {
     return (`/img/${this._data.photograph}-${width}.${format}`);
   }
 
-  get cardHTML() {
-    if (!this._card) this._card = this.makeCardHTML();
-    return this._card;
+  get cardNode() {
+    if (!this._cardNode) this._cardNode = this.makeCardNode();
+    return this._cardNode;
   }
 
-  makeCardHTML() {
+  makeCardNode() {
     const li = document.createElement('li');
 
     li.id = `restaurant-card-${this._data.id}`;
     li.classList.add('card');
 
-    li.appendChild(this._makePicture([
+    const favoriteButton = this._makeFavoriteButton();
+    li.appendChild(favoriteButton);
+
+    const picture = document.createElement('picture');
+    li.appendChild(picture);
+    this._fillPicture(picture, [
       '(min-width: 1300px) 33vw',
       '(min-width: 768px) 50vw',
       '100vw'
-    ]));
-    li.appendChild(this._makeHeading());
-    li.appendChild(this._makeNeighborhood());
-    li.appendChild(this._makeAddress());
+    ]);
+
+    const name = document.createElement('h2');
+    li.appendChild(name);
+
+    const neighborhood = document.createElement('p');
+    neighborhood.classList.add('restaurant-neighborhood');
+    li.appendChild(neighborhood);
+
+    const address = document.createElement('p');
+    address.classList.add('restaurant-address');
+    li.appendChild(address);
+
     li.appendChild(this._makeButtons());
+
+    // #yayclosures
+    this.updateCardNode = data => {
+      if (data) this._data = data;
+
+      name.innerHTML = this.name;
+      neighborhood.innerHTML = this.neighborhood;
+      address.innerHTML = this.address;
+      if (this.isFavorite)
+        favoriteButton.setAttribute('checked', 'checked');
+      else
+        favoriteButton.removeAttribute('checked');
+    };
+
+    this.updateCardNode();
 
     return li;
   }
 
-  _makeHeading() {
-    const name = document.createElement('h2');
-    name.innerHTML = this._data.name;
-    return name;
-  }
-
-  _makeNeighborhood() {
-    const neighborhood = document.createElement('p');
-    neighborhood.innerHTML = this._data.neighborhood;
-    neighborhood.classList.add('restaurant-neighborhood');
-    return neighborhood;
-  }
-
-  _makeAddress() {
-    const address = document.createElement('p');
-    address.innerHTML = this._data.address;
-    address.classList.add('restaurant-address');
-    return address;
+  _makeFavoriteButton() {
+    const fav = document.createElement('input');
+    fav.type = 'checkbox';
+    fav.classList.add('favorite');
+    fav.setAttribute('aria-label', `Favorite ${this.name}`);
+    fav.onchange = () => {
+      // this checkbox has no ID but we still have right when we need it
+      // #yayclosures ☺ ☺ ☺
+      this._setFavorite({id: this.id, is_favorite: fav.checked});
+    };
+    return fav;
   }
 
   _makeButtons() {
@@ -73,22 +100,16 @@ export default class Restaurant {
     const more = document.createElement('a');
     more.classList.add('brand-button');
     more.innerHTML = 'View Details';
-    more.setAttribute('aria-label', `${this._data.name} details`);
-    more.href = this._url;
+    more.setAttribute('aria-label', `${this.name} details`);
+    more.href = this.url;
     return more;
-  }
-
-  _makePicture(sourceSizes) {
-    const picture = document.createElement('picture');
-    this._fillPicture(picture, sourceSizes);
-    return picture;
   }
 
   _fillPicture(picture, sourceSizes) {
     sourceSizes = sourceSizes.join(', ');
     const sourceWidths = [400, 800];
     const sourceSet = format => sourceWidths.map(
-      width => `${this._imageUrl(width, format)} ${width}w`
+      width => `${this.imageUrl(width, format)} ${width}w`
     ).join(', ');
 
     const webpSource = document.createElement('source');
@@ -105,8 +126,9 @@ export default class Restaurant {
     const image = document.createElement('img');
     image.className = 'restaurant-img';
     image.sizes = sourceSizes;
-    image.src = this._imageUrl();
-    image.alt = this._imageAltText;
+    image.src = this.imageUrl();
+    image.alt = this.imageAltText;
+
     picture.appendChild(image);
   }
 
@@ -146,7 +168,7 @@ export default class Restaurant {
         [this._data.latlng.lat, this._data.latlng.lng], {
           title: this.name,
           alt: this.name,
-          url: this._url
+          url: this.url
         }
       );
       this._mapMarker.on('click', () => {
