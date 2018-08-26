@@ -39,11 +39,15 @@ module.exports = ({gulp, config, imports}) => {
         pipe(gulp.dest(jsDir));
     });
   };
-  jsTask({name: 'main', dist: false});
-  jsTask({name: 'main', dist: true});
-  jsTask({name: 'restaurant_info', dist: false});
-  jsTask({name: 'restaurant_info', dist: true});
+  //jsTask({name: 'main', dist: false});
+  //jsTask({name: 'main', dist: true});
+  //jsTask({name: 'restaurant_info', dist: false});
+  //jsTask({name: 'restaurant_info', dist: true});
 
+  gulp.task('js:build', gulp.series('js:mkdir', () => {
+    return gulp.src(config.patterns.js).
+      pipe(gulp.dest(jsDir));
+  }));
   const jsTaskAll = ({dist = false}) => {
     gulp.task(`js:scripts${dist?':dist':''}`, gulp.series(
       'js:mkdir',
@@ -53,8 +57,8 @@ module.exports = ({gulp, config, imports}) => {
       )
     ));
   };
-  jsTaskAll({dist: false});
-  jsTaskAll({dist: true});
+  //jsTaskAll({dist: false});
+  //jsTaskAll({dist: true});
 
   gulp.task('sw:copy', () => {
     return gulp.src([config.patterns.sw]).
@@ -64,7 +68,7 @@ module.exports = ({gulp, config, imports}) => {
   gulp.task('js', gulp.series(
     'js:eslint',
     gulp.parallel(
-      'js:scripts',
+      'js:build',
       'sw:copy'
     )
   ));

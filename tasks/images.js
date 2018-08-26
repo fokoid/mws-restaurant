@@ -32,16 +32,16 @@ module.exports = ({gulp, config, imports}) => {
       pipe(gulp.dest(path.join(config.distDir, 'img')));
   });
 
-  gulp.task('images:copy', () => {
+  gulp.task('icons:copy', () => {
     return gulp.src(config.patterns.icon).
-      pipe(gulp.dest(path.join(config.distDir, 'img')));
+      pipe(gulp.dest(config.distDir));
   });
 
   gulp.task('images', gulp.series(
     'images:mkdir',
     gulp.parallel(
       'images:responsive',
-      'images:copy'
+      'icons:copy'
     )
   ));
 };

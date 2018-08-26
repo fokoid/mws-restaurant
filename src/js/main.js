@@ -1,4 +1,9 @@
 /* eslint no-unused-vars: 0, no-undef: 0 */
+import '/js/sw.js';
+import DBHelper from '/js/dbhelper.js';
+const db = new DBHelper();
+window.db = db;
+
 let restaurants,
   neighborhoods,
   cuisines;
@@ -9,8 +14,10 @@ var markers = [];
  * Fetch all neighborhoods and set their HTML.
  */
 const fetchNeighborhoods = async () => {
-  self.neighborhoods = await DBHelper.fetchNeighborhoods(fillNeighborhoodsHTML);
-  fillNeighborhoodsHTML();
+  self.neighborhoods = await db.getNeighborhoods({
+    callback: fillNeighborhoodsHTML
+  });
+  return self.neighborhoods;
 };
 
 /**
@@ -34,8 +41,10 @@ const fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
  * Fetch all cuisines and set their HTML.
  */
 const fetchCuisines = async () => {
-  self.cuisines = await DBHelper.fetchCuisines(fillCuisinesHTML);
-  fillCuisinesHTML();
+  self.cuisines = await db.getCuisines({
+    callback: fillCuisinesHTML
+  });
+  return self.cuisines;
 };
 
 /**
@@ -56,27 +65,6 @@ const fillCuisinesHTML = (cuisines = self.cuisines) => {
 };
 
 /**
- * Initialize leaflet map, called from HTML.
- */
-const initMap = () => {
-  self.newMap = L.map('map', {
-    center: [40.722216, -73.987501],
-    zoom: 12,
-    scrollWheelZoom: false
-  });
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
-    mapboxToken: 'pk.eyJ1IjoidGhvcm5lY2MiLCJhIjoiY2prNGd4NjJtMDU2MTN3b3N6amhkOWlmZSJ9.w5foWJEe-aT0t1kPYvVEPg',
-    maxZoom: 18,
-    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox.streets'
-  }).addTo(newMap);
-
-  updateRestaurants();
-};
-
-/**
  * Update page and map for current restaurants.
  */
 const updateRestaurants = async () => {
@@ -89,26 +77,22 @@ const updateRestaurants = async () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  resetRestaurants(await DBHelper.fetchRestaurantByCuisineAndNeighborhood(
+  resetRestaurants();
+  self.restaurants = await db.searchRestaurants({
     cuisine,
     neighborhood,
-    restaurants => {
-      resetRestaurants(restaurants);
-      fillRestaurantsHTML(restaurants);
-    }
-  ));
-  fillRestaurantsHTML();
+    callback: fillRestaurantsHTML
+  });
+  return self.restaurants;
 };
+self.updateRestaurants = updateRestaurants;
 
 /**
  * Clear current restaurants, their HTML and remove their map markers.
  */
-const resetRestaurants = (restaurants) => {
+const resetRestaurants = () => {
   // Remove all restaurants
   self.restaurants = [];
-
-  if (!restaurants)
-    return;
 
   const ul = document.getElementById('restaurants-list');
   ul.innerHTML = '';
@@ -118,14 +102,20 @@ const resetRestaurants = (restaurants) => {
     self.markers.forEach(marker => marker.remove());
   }
   self.markers = [];
-  self.restaurants = restaurants;
 };
 
 /**
- * Create all restaurants HTML and add them to the webpage.
+ * Add the given restaurants to the HTML. Restaurant cards are labelled by a
+ * unique ID `restaurant-card-${id}` to ensure no duplicates are added.
  */
 const fillRestaurantsHTML = (restaurants = self.restaurants) => {
+  console.log('received restaurant IDs:', restaurants.map(({id}) => id));
   const ul = document.getElementById('restaurants-list');
+  const oldIDs = Array.from(ul.getElementsByTagName('li')).
+    map(li => parseInt(li.id.replace('restaurant-card-', '')));
+  console.log('existing restaurant IDs:', oldIDs);
+  restaurants = restaurants.filter(({id}) => !oldIDs.includes(id));
+  console.log('inserting restaurant IDs:', restaurants.map(({id}) => id));
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
@@ -135,8 +125,9 @@ const fillRestaurantsHTML = (restaurants = self.restaurants) => {
 /**
  * Create restaurant HTML.
  */
-const createRestaurantHTML = (restaurant) => {
+const createRestaurantHTML = restaurant => {
   const li = document.createElement('li');
+  li.id = `restaurant-card-${restaurant.id}`;
   li.classList.add('card');
 
   const picture = createRestaurantPicture(restaurant);
@@ -197,7 +188,7 @@ const createRestaurantPicture = (restaurant) => {
   image.className = 'restaurant-img';
   image.sizes = sourceSizes;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.alt = DBHelper.restaurantImageAltText(restaurant);
+  image.alt = DBHelper.imageAltTextForRestaurant(restaurant);
   picture.append(image);
 
   return picture;
@@ -217,6 +208,32 @@ const addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 
+};
+
+/**
+ * Initialize leaflet map, called from HTML.
+ */
+const initMap = () => {
+  try {
+    self.newMap = L.map('map', {
+      center: [40.722216, -73.987501],
+      zoom: 12,
+      scrollWheelZoom: false
+    });
+  } catch (err) { // leaflet not loaded for some reason?
+    console.log('Error loading map.');
+  }
+
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
+    mapboxToken: 'pk.eyJ1IjoidGhvcm5lY2MiLCJhIjoiY2prNGd4NjJtMDU2MTN3b3N6amhkOWlmZSJ9.w5foWJEe-aT0t1kPYvVEPg',
+    maxZoom: 18,
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+    '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox.streets'
+  }).addTo(self.newMap);
+
+  updateRestaurants();
 };
 
 /**

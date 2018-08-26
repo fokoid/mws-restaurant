@@ -1,4 +1,4 @@
-const CACHE_VERSION = 35;
+const CACHE_VERSION = 44;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
@@ -7,8 +7,20 @@ const URL_LIST = [
   '/restaurant.html',
   '/js/main.js',
   '/js/restaurant_info.js',
+  '/js/idb.js',
+  '/js/sw.js', // note: this is NOT the worker script, it just registers it
+  '/js/dbhelper.js',
   '/css/styles.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon-16.png',
+  '/icon-32.png',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/favicon.ico',
+  'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
+  'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
+  'https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png',
+  'https://unpkg.com/leaflet@1.3.1/dist/images/marker-shadow.png'
 ];
 
 self.addEventListener('install', event => void event.waitUntil((async () => {
@@ -34,7 +46,13 @@ self.addEventListener('fetch', event => void event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME);
     return await cache.match('/restaurant.html');
   }
-  return await caches.match(event.request) || await fetch(event.request);
+  const match = await caches.match(event.request);
+  if (match) return match;
+  try {
+    return await fetch(event.request);
+  } catch (err) {
+    console.log('[sw] Fetch failed:', err);
+  }
 })()));
 
 const fetchImg = async request => {
@@ -44,9 +62,13 @@ const fetchImg = async request => {
   const imgCache = await caches.open(IMG_CACHE_NAME);
   let response = await imgCache.match(url);
   if (!response) {
-    response = await fetch(request);
-    if (response.status === 200)
-      imgCache.put(url, response.clone());
+    try {
+      response = await fetch(request);
+      if (response.status === 200)
+        imgCache.put(url, response.clone());
+    } catch (err) {
+      console.log('[sw.js] Fetch failed:', err);
+    }
   }
   return response;
 };

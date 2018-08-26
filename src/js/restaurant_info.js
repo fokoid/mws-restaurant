@@ -1,4 +1,9 @@
 /* eslint no-unused-vars: 0, no-undef: 0 */
+import '/js/sw.js';
+import DBHelper from '/js/dbhelper.js';
+const db = new DBHelper();
+window.db = db;
+
 let restaurant;
 var newMap;
 
@@ -7,6 +12,8 @@ var newMap;
  */
 const initMap = async () => {
   const restaurant = await fetchRestaurantFromURL();
+  if (!restaurant) return;
+  fetchReviews();
   self.newMap = L.map('map', {
     center: [restaurant.latlng.lat, restaurant.latlng.lng],
     zoom: 16,
@@ -19,7 +26,7 @@ const initMap = async () => {
     '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
     'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     id: 'mapbox.streets'
-  }).addTo(newMap);
+  }).addTo(self.newMap);
   fillBreadcrumb();
   DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
 };
@@ -31,24 +38,21 @@ const fetchRestaurantFromURL = async () => {
   if (self.restaurant) { // restaurant already fetched!
     return self.restaurant;
   }
-  const id = getParameterByName('id');
-  if (!id) { // no id found in URL
+  const id = parseInt(getParameterByName('id'));
+  if (isNaN(id)) { // no id found in URL
     console.error('No restaurant id in URL');
     return null;
   }
-  const restaurant = await DBHelper.fetchRestaurants({id, updateCallback: fillRestaurantHTML});
-  if (!restaurant) {
-    console.error('No restaurant data received.');
-  }
-  self.restaurant = restaurant;
-  fillRestaurantHTML();
-  return restaurant;
+  self.restaurant = await db.getRestaurant({id, callback: fillRestaurantHTML});
+  return self.restaurant;
 };
 
 /**
  * Create restaurant HTML and add it to the webpage
  */
 const fillRestaurantHTML = (restaurant = self.restaurant) => {
+  if (!restaurant) return;
+
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -63,12 +67,17 @@ const fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   // fill operating hours
   if (restaurant.operating_hours) {
-    fillRestaurantHoursHTML();
+    fillRestaurantHoursHTML(restaurant.operating_hours);
   }
-  // fill reviews
-  fillReviewsHTML();
 };
 
+const fetchReviews = async (restaurant = self.restaurant) => {
+  self.reviews = await db.getReviewsForRestaurant({
+    restaurant_id: restaurant.id,
+    callback: fillReviewsHTML
+  });
+  return self.reviews;
+};
 /**
  * Create restaurant picture + sources
  */
@@ -100,7 +109,7 @@ const fillRestaurantPicture = (picture, restaurant) => {
   image.className = 'restaurant-img';
   image.sizes = sourceSizes;
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  image.alt = DBHelper.restaurantImageAltText(restaurant);
+  image.alt = DBHelper.imageAltTextForRestaurant(restaurant);
   picture.append(image);
 };
 
@@ -128,15 +137,11 @@ const fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hour
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-const fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+const fillReviewsHTML = (reviews = self.reviews) => {
+  self.reviews = reviews;
   const container = document.getElementById('reviews-container');
 
-  if (!reviews) {
-    const noReviews = document.createElement('p');
-    noReviews.innerHTML = 'No reviews yet!';
-    container.appendChild(noReviews);
-    return;
-  }
+  if (!reviews) return;
   const ul = document.getElementById('reviews-list');
   ul.innerHTML = '';
   reviews.forEach(review => {
@@ -168,7 +173,9 @@ const createReviewHTML = (review) => {
   header.appendChild(rating);
 
   const date = document.createElement('span');
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.updatedAt).toLocaleDateString('en-gb', {
+    day: '2-digit', month: 'long', year: 'numeric'
+  });
   date.classList.add('review-date');
   header.appendChild(date);
 

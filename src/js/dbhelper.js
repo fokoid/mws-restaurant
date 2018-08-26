@@ -1,147 +1,174 @@
-/* eslint no-unused-vars: 0, no-undef: 0 */
-/**
- * Return the unique values in a list.
- */
 const unique = ls => ls.filter((v, i) => ls.indexOf(v) == i);
+const filterOnProp = (prop, key) => ls => ls.filter(x => x[prop] === key);
+const extractProp = prop => ls => unique(ls.map(x => x[prop]));
 
 /**
- * Common database helper functions.
+ * A wrapper for the restaurant JSON database.
+ *
+ * A local database is used to respond to queries. This database is kept in
+ * sync, as much as possible, with the remote database.
  */
-class DBHelper {
+export default class DBHelper {
+  constructor({host='localhost', port=1337, name='restaurant-reviews'} = {}) {
+    this._host = host;
+    this._port = port;
+    this._name = name;
+    if (!('serviceWorker' in navigator)) {
+      this._dbPromise = null;
+      return;
+    }
+    this._dbPromise = idb.open(name, 1, upgradeDB => { /* eslint no-undef: 0 */
+      switch (upgradeDB.oldVersion) {
+        case 0:
+          upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
+          upgradeDB.createObjectStore('reviews', { keyPath: 'id' }).
+            createIndex('by-restaurant', 'restaurant_id');
+      }
+    });
+  }
 
-  /**
-   * Database URL.
-   * Change this to restaurants.json file location on your server.
-   */
-  static databaseUrl(id='') {
+  get name() { return this._name; }
+  get host() { return this._host; }
+  get port() { return this._port; }
+  get protocol() {
+    if (this.host === 'localhost' || this.host === '127.0.0.1')
+      return 'http';
+    return 'https';
+  }
+  get origin() {
+    return `${this.protocol}://${this.host}:${this.port}`;
+  }
+
+  queryUrl({id=''} = {}) {
     return `http://localhost:1337/restaurants/${id}`;
   }
 
+  networkFetch({id=''} = {}) {
+    return fetch(this.queryUrl({id}));
+  }
+
   /**
-   * Fetch all restaurants, or a given restaurant (by its ID).
+   * ============ Generic database methods =============
    */
-  static async fetchRestaurants({id, updateCallback} = {}) {
-    if (!('serviceWorker' in navigator)) {
-      // no serviceworker, no caching. just fetch from the network
-      return await fetch(DBHelper.databaseUrl(id));
+  async open({storeName, write=false} = {}) {
+    if (!storeName)
+      return {};
+    const db = await this._dbPromise;
+    const mode = write ? 'readwrite' : 'readonly';
+    let index;
+    if (storeName === 'by-restaurant') {
+      index = true;
+      storeName = 'reviews';
     }
-    // first search the database
-    const db = await window.dbPromise;
-    const tx = db.transaction('restaurants');
-    const store = tx.objectStore('restaurants');
+    const tx = db.transaction(storeName, mode);
+    let store = tx.objectStore(storeName);
+    if (index)
+      store = store.index('by-restaurant');
+    return {db, tx, store};
+  }
 
-    if (!id) {
-      const restaurants = await store.getAll();
+  async get({storeName, id} = {}) {
+    const {store} = await this.open({storeName});
+    if (id) {
+      if (storeName === 'by-restaurant') {
+        return await store.getAll(id);
+      }
+      return await store.get(id);
+    }
+    return await store.getAll();
+  }
 
-      fetch(DBHelper.databaseUrl()).then(async response => {
-        const networkData = await response.clone().json();
-        const db = await window.dbPromise;
-        const tx = db.transaction('restaurants', 'readwrite');
-        const store = tx.objectStore('restaurants');
-        networkData.forEach(async restaurant => {
-          store.put(restaurant);
+  async put({storeName, records}) {
+    if (!Array.isArray(records)) records = [records];
+    if (storeName === 'by-restaurant') storeName = 'reviews';
+    const {tx, store} = await this.open({storeName, write: true});
+    records.forEach(record => store.put(record));
+    return await tx.complete;
+  }
+
+  /**
+   * Main fetch methods.
+   */
+  async fetch({storeName, restaurant_id, id, callback}) {
+    let queryUrl = `${this.origin}/${storeName}/`;
+    if (id) {
+      queryUrl += id;
+    } else if (restaurant_id) {
+      id = restaurant_id;
+      queryUrl += `?restaurant_id=${restaurant_id}`;
+      storeName = 'by-restaurant';
+    }
+    const result = await this.get({storeName, id});
+    if (callback)
+      callback(result);
+
+    const networkResult = fetch(queryUrl).then(async response => {
+      if (response.status === 200) {
+        this.put({
+          storeName,
+          records: await response.clone().json()
         });
-        updateCallback(await response.json());
-      }).catch(err => void console.error('Failed to fetch:', err));
-      return restaurants;
-    }
-
-    const restaurantID = parseInt(id);
-    if (isNaN(restaurantID)) {
-      console.error('Bad ID', id);
-      return;
-    }
-
-    const restaurant = await store.get(restaurantID);
-    const networkPromise = fetch(DBHelper.databaseUrl(id)).
-      then(async response => {
-        const db = await window.dbPromise;
-        const tx = db.transaction('restaurants', 'readwrite');
-        const store = tx.objectStore('restaurants');
-        store.put(await response.clone().json());
-        // if we hit a match in the cache, we should reload to ensure any
-        // updated information is present
-        if (restaurant && updateCallback)
-          updateCallback(await response.clone().json());
-        return await response.json();
-      });
-    try {
-      return restaurant || await networkPromise;
-    } catch (err) {
-      console.error('Failed to fetch:', err);
-    }
+        const result = await response.json();
+        if (callback)
+          callback(result);
+        return result;
+      }
+    }).catch(err => {
+      console.log(`Fetch for ${queryUrl} failed:`, err);
+    });
+    return result || await networkResult;
   }
 
-  /**
-   * Fetch restaurants by a cuisine type with proper error handling.
-   */
-  static async fetchRestaurantByCuisine(cuisine, updateCallback) {
-    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
-    if (!restaurants)
-      return null;
-    return restaurants.filter(r => r.cuisine_type == cuisine);
+  getReview({id, callback}) {
+    return this.fetch({storeName: 'reviews', id, callback});
   }
 
-  /**
-   * Fetch restaurants by a neighborhood with proper error handling.
-   */
-  static async fetchRestaurantByNeighborhood(neighborhood, updateCallback)  {
-    const restaurants = await DBHelper.fetchRestaurants({updateCallback});
-    if (!restaurants)
-      return null;
-    return restaurants.filter(r => r.neighborhood == neighborhood);
+  getReviewsForRestaurant({restaurant_id, callback}) {
+    return this.fetch({storeName: 'reviews', restaurant_id, callback});
   }
 
-  /**
-   * Fetch restaurants by a cuisine and a neighborhood with proper error handling.
-   */
-  static async fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, updateCallback) {
-    const filterRestaurants = restaurants => {
+  getReviews({callback} = {}) {
+    return this.fetch({storeName: 'reviews', callback});
+  }
+
+  getRestaurant({id, callback}) {
+    return this.fetch({storeName: 'restaurants', id, callback});
+  }
+
+  getRestaurants({callback} = {}) {
+    return this.fetch({storeName: 'restaurants', callback});
+  }
+
+  async searchRestaurants({cuisine, neighborhood, callback}) {
+    const filterByCuisine = filterOnProp('cuisine_type', cuisine);
+    const filterByNeighborhood = filterOnProp('neighborhood', neighborhood);
+    const search = restaurants => {
       let results = restaurants;
-      if (cuisine != 'all') { // filter by cuisine
-        results = results.filter(r => r.cuisine_type == cuisine);
-      }
-      if (neighborhood != 'all') { // filter by neighborhood
-        results = results.filter(r => r.neighborhood == neighborhood);
-      }
+      if (cuisine && cuisine != 'all')
+        results = filterByCuisine(results);
+      if (neighborhood && neighborhood != 'all')
+        results = filterByNeighborhood(results);
       return results;
     };
-    const restaurants = await DBHelper.fetchRestaurants({
-      updateCallback: restaurants => updateCallback(filterRestaurants(restaurants))
+    const restaurants = await this.getRestaurants({
+      callback: callback && (ls => callback(search(ls)))
     });
-    if (!restaurants)
-      return [];
-    return filterRestaurants(restaurants);
+    return search(restaurants);
   }
 
-  /**
-   * Fetch all neighborhoods with proper error handling.
-   */
-  static async fetchNeighborhoods(updateCallback) {
-    const getNeighborhoods = restaurants => {
-      if (!restaurants)
-        return [];
-      return unique(restaurants.map(({neighborhood}) => neighborhood));
-    };
-    const restaurants = await DBHelper.fetchRestaurants({
-      updateCallback: restaurants => updateCallback(getNeighborhoods(restaurants))
+  async getPropertyValues({property, callback}) {
+    const restaurants = await this.getRestaurants({
+      callback: callback && (ls => callback(extractProp(property)(ls)))
     });
-    return getNeighborhoods(restaurants);
+    return extractProp(property)(restaurants);
   }
 
-  /**
-   * Fetch all cuisines with proper error handling.
-   */
-  static async fetchCuisines(updateCallback) {
-    const getCuisines = restaurants => {
-      if (!restaurants)
-        return [];
-      return unique(restaurants.map(({cuisine_type}) => cuisine_type));
-    };
-    const restaurants = await DBHelper.fetchRestaurants({
-      updateCallback: restaurants => updateCallback(getCuisines(restaurants))
-    });
-    return getCuisines(restaurants);
+  getNeighborhoods({callback} = {}) {
+    return this.getPropertyValues({property: 'neighborhood', callback});
+  }
+
+  getCuisines({callback} = {}) {
+    return this.getPropertyValues({property: 'cuisine_type', callback});
   }
 
   /**
@@ -159,36 +186,26 @@ class DBHelper {
   }
 
   /**
-   * Map marker for a restaurant.
-   */
-  static mapMarkerForRestaurant(restaurant, map) {
-    // https://leafletjs.com/reference-1.3.0.html#marker
-    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng], {
-      title: restaurant.name,
-      alt: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant)
-    });
-    marker.addTo(newMap);
-    return marker;
-  }
-  /* static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP}
-    );
-    return marker;
-  } */
-
-  /**
    * Alt text for restaurant image
    */
-  static restaurantImageAltText(restaurant) {
+  static imageAltTextForRestaurant(restaurant) {
     if ('photograph_alt' in restaurant)
       return restaurant.photograph_alt;
     return restaurant.name;
   }
-}
 
+  /**
+   * Map marker for a restaurant.
+   */
+  static mapMarkerForRestaurant(restaurant, newMap) {
+    // https://leafletjs.com/reference-1.3.0.html#marker
+    const marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng], {
+      title: restaurant.name,
+      alt: restaurant.name,
+      url: this.urlForRestaurant(restaurant)
+    });
+    marker.addTo(newMap);
+    return marker;
+  }
+
+}
