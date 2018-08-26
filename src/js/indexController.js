@@ -93,9 +93,10 @@ export default class IndexController {
       return;
     }
     const oldIDs = this._data.restaurants.map(restaurant => restaurant.id);
-    this._data.restaurants = restaurants.map(data => new Restaurant(data));
-    const restaurantsToInsert = this._data.restaurants.
+    restaurants = restaurants.
       filter(restaurant => !oldIDs.includes(restaurant.id));
+    const restaurantsToInsert = restaurants.map(data => new Restaurant(data));
+    this._data.restaurants = this._data.restaurants.concat(restaurantsToInsert);
 
     const ul = document.getElementById('restaurants-list');
     restaurantsToInsert.forEach(restaurant => {

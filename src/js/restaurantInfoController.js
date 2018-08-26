@@ -71,9 +71,10 @@ export default class RestaurantInfoController {
       return;
     }
     const oldIDs = this._data.reviews.map(review => review.id);
-    this._data.reviews = reviews.map(data => new Review(data));
-    const reviewsToInsert = this._data.reviews.
-      filter(review => !oldIDs.includes(review.id));
+    reviews = review.filter(review => !oldIDs.includes(review.id));
+    const reviewsToInsert = reviews.map(data => new Review(data));
+    this._data.reviews = this._data.restaurant.concat(reviewsToInsert);
+
     const ul = document.getElementById('reviews-list');
     reviewsToInsert.forEach(review => {
       ul.appendChild(review.cardHTML);
