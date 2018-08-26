@@ -1,15 +1,16 @@
-const CACHE_VERSION = 45;
+const CACHE_VERSION = 47;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
 const URL_LIST = [
   '/',
   '/restaurant.html',
-  '/js/main.js',
-  '/js/restaurant_info.js',
+  '/js/indexController.js',
+  '/js/restaurantInfoController.js',
   '/js/idb.js',
-  '/js/sw.js', // note: this is NOT the worker script, it just registers it
   '/js/dbhelper.js',
+  '/js/restaurant.js',
+  '/js/review.js',
   '/css/styles.css',
   '/manifest.json',
   '/icon-16.png',
