@@ -1,7 +1,6 @@
 export default class Restaurant {
   constructor(data) {
     this._data = data;
-    this._fillHTML();
   }
 
   get id() { return this._data.id; }
@@ -20,23 +19,28 @@ export default class Restaurant {
     return (`/img/${this._data.photograph}-${width}.${format}`);
   }
 
-  get cardHTML() { return this._card; }
+  get cardHTML() {
+    if (!this._card) this._card = this.makeCardHTML();
+    return this._card;
+  }
 
-  _fillHTML() {
-    this._card = document.createElement('li');
+  makeCardHTML() {
+    li = document.createElement('li');
 
-    this._card.id = `restaurant-card-${this._data.id}`;
-    this._card.classList.add('card');
+    li.id = `restaurant-card-${this._data.id}`;
+    li.classList.add('card');
 
-    this._card.appendChild(this._makePicture([
+    li.appendChild(this._makePicture([
       '(min-width: 1300px) 33vw',
       '(min-width: 768px) 50vw',
       '100vw'
     ]));
-    this._card.appendChild(this._makeHeading());
-    this._card.appendChild(this._makeNeighborhood());
-    this._card.appendChild(this._makeAddress());
-    this._card.appendChild(this._makeButtons());
+    li.appendChild(this._makeHeading());
+    li.appendChild(this._makeNeighborhood());
+    li.appendChild(this._makeAddress());
+    li.appendChild(this._makeButtons());
+
+    return li;
   }
 
   _makeHeading() {

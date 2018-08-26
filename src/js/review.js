@@ -1,7 +1,6 @@
 export default class Review {
   constructor(data) {
     this._data = data;
-    this._fillHTML();
   }
 
   get id() { return this._data.id; }
@@ -12,14 +11,17 @@ export default class Review {
   }
   get date() { return new Date(this._data.updatedAt); }
   get text() { return this._data.comments; }
-  get cardHTML() { return this._card; }
+  get cardHTML() {
+    if (!this._card) this._card = this.makeCardHTML();
+    return this._card;
+  }
 
-  _fillHTML() {
-    this._card = document.createElement('li');
-    this._card.classList.add('card', 'review');
-
-    this._card.appendChild(this._makeHeader());
-    this._card.appendChild(this._makeText());
+  makeCardHTML() {
+    const li = document.createElement('li');
+    li.classList.add('card', 'review');
+    li.appendChild(this._makeHeader());
+    li.appendChild(this._makeText());
+    return li;
   }
 
   _makeHeader() {
