@@ -216,10 +216,19 @@ export default class DBHelper {
   async _setFavoriteNetwork({id, is_favorite}) {
     if (! await this._setFavoriteNetworkFetch({id, is_favorite})) {
       // remote save failed. we are probably offline so let's queue it for later
+
+      // 1. Check if there were already pending transactions: we need this to
+      // decide whether to notify client via `this._pendingCallback`.
+      const alreadyPending = await this._isPending();
+
+      // 2. Open store and write transaction.
       const {tx, store} = await this.open({storeName: 'pendingFavorites', write: true});
       store.put({id, is_favorite});
-      if (this._pendingCallback)
+
+      // 3. Notify client if necessary.
+      if (this._pendingCallback && !alreadyPending) {
         this._pendingCallback({pending: true});
+      }
       return await tx.complete;
     }
   }
