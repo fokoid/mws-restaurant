@@ -1,6 +1,7 @@
 import DBHelper from '/js/dbhelper.js';
 import Restaurant from '/js/restaurant.js';
 import Review from '/js/review.js';
+import getWarning from '/js/warning.js';
 
 /**
  * Get a parameter by name from page URL.
@@ -21,7 +22,18 @@ const getParameterByName = (name, url) => {
 export default class RestaurantInfoController {
   constructor(container) {
     this._container = container;
-    this._db = new DBHelper();
+    this._warningNode = getWarning();
+    this._db = new DBHelper({
+      pendingCallback: ({pending}) => {
+        if (pending) {
+          // state just changed to pending: let's notify the user
+          this._warningNode.activate(document.activeElement);
+        } else {
+          // if not, make sure warning is hidden
+          this._warningNode.deactivate(document.activeElement);
+        }
+      }
+    });
     this._data = {
       reviews: []
     };
@@ -34,6 +46,8 @@ export default class RestaurantInfoController {
   }
 
   async _init() {
+    document.getElementsByTagName('header')[0].appendChild(this._warningNode);
+    this._warningNode.enableAnimation();
     this._data.restaurant = new Restaurant({
       data: await this._db.getRestaurant({
         id: this._data.id,

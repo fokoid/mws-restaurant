@@ -310,10 +310,13 @@ nav {
     text-align: center;
     text-transform: uppercase;
     margin: 10px auto;
+    padding-top: 200px;
+    margin-top: -190px;
 
     @media screen and (min-width: $width-minor) {
       font-size: 2em;
       margin: 15px auto 20px;
+      margin-top: -185px;
     }
   }
 

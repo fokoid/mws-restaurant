@@ -8,6 +8,7 @@ const extractProp = prop => ls => unique(ls.map(x => x[prop]));
 export default class IndexController {
   constructor(container) {
     this._container = container;
+    this._warningNode = getWarning();
     this._db = new DBHelper({
       pendingCallback: ({pending}) => {
         if (pending) {
@@ -22,7 +23,6 @@ export default class IndexController {
     this._data = {
       restaurants: []
     };
-    this._warningNode = getWarning();
     document.addEventListener('DOMContentLoaded', () => void this._init());
   }
 
