@@ -214,10 +214,16 @@ export default class DBHelper {
   }
 
   async _setFavoriteNetwork({id, is_favorite}) {
-    if (! await this._setFavoriteNetworkFetch({id, is_favorite})) {
-      // remote save failed. we are probably offline so let's queue it for later
+    // Try to resolve pending transactions over the network (no need to worry
+    // about latency ― the local database was already updated).
+    await this._tryPending();
 
-      // 1. Check if there were already pending transactions: we need this to
+    // Now try to apply current transaction.
+    const success = await this._setFavoriteNetworkFetch({id, is_favorite});
+
+    // If remote save failed, we are probably offline so let's queue it for later.
+    if (!success) {
+      // 1. Check if there are already pending transactions: we need this to
       // decide whether to notify client via `this._pendingCallback`.
       const alreadyPending = await this._isPending();
 
@@ -282,6 +288,7 @@ export default class DBHelper {
   }
 
   async _tryPending() {
+    if (!await this._isPending()) return;
     const {success, changes} = await this._applyPendingNetwork();
     if (success) {
       // if we successfully reconciled with network, wipe pending transactions
