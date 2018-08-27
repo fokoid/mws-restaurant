@@ -21,6 +21,8 @@ export default class Restaurant {
     return this.name;
   }
   imageUrl(width=800, format='jpg') {
+    if (!this._data.photograph)
+      return `/img/placeholder-${width}.png`;
     return (`/img/${this._data.photograph}-${width}.${format}`);
   }
 
