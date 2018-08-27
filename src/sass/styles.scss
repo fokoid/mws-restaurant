@@ -137,7 +137,6 @@ nav {
     font-weight: normal;
     line-height: 1;
     margin: 10px 20px;
-    width: 70%;
     flex-grow: 1;
   }
 
@@ -154,8 +153,9 @@ nav {
   @media screen and (min-width: 768px) {
     flex-wrap: nowrap;
 
-    h2 {
-      width: 100%;
+    h2,
+    select{
+      width: 30%;
     }
 
     select {
