@@ -9,10 +9,16 @@ const extractProp = prop => ls => unique(ls.map(x => x[prop]));
  * sync, as much as possible, with the remote database.
  */
 export default class DBHelper {
-  constructor({host='localhost', port=1337, name='restaurant-reviews'} = {}) {
+  constructor({
+    host='localhost',
+    port=1337,
+    name='restaurant-reviews',
+    pendingCallback
+  } = {}) {
     this._host = host;
     this._port = port;
     this._name = name;
+    this._pendingCallback = pendingCallback;
     if (!('serviceWorker' in navigator)) {
       this._dbPromise = null;
       return;
@@ -27,6 +33,8 @@ export default class DBHelper {
           upgradeDB.createObjectStore('pendingFavorites', { keyPath: 'id' });
       }
     });
+    if (this._pendingCallback)
+      this._isPending().then(pending => void this._pendingCallback({pending}));
   }
 
   get name() { return this._name; }
@@ -210,6 +218,8 @@ export default class DBHelper {
       // remote save failed. we are probably offline so let's queue it for later
       const {tx, store} = await this.open({storeName: 'pendingFavorites', write: true});
       store.put({id, is_favorite});
+      if (this._pendingCallback)
+        this._pendingCallback({pending: true});
       return await tx.complete;
     }
   }
@@ -268,8 +278,17 @@ export default class DBHelper {
       // if we successfully reconciled with network, wipe pending transactions
       // from IDB
       await this._erasePending();
+      if (this._pendingCallback)
+        this._pendingCallback({pending: false});
     }
     // either way, ensure pending changes are applied locally
     return await this._applyPendingLocal(changes);
+  }
+
+  async _isPending() {
+    const {tx, store} = await this.open({storeName: 'pendingFavorites'});
+    let pending = (await store.count()) > 0;
+    await tx.complete;
+    return pending;
   }
 }
