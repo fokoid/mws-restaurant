@@ -15,7 +15,7 @@ export default class IndexController {
           // state just changed to pending: let's notify the user
           this._warningNode.activate(document.activeElement);
         } else {
-          // if not, make sure warning is hidden
+          // otherwise, make sure warning is hidden
           this._warningNode.deactivate(document.activeElement);
         }
       }

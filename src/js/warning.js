@@ -12,8 +12,8 @@ const makeNode = () => {
 
   inner.innerHTML = [
     'You are not currently connected to the network. Don\'t worry ― your',
-    'changes have been saved locally and will be synced as soon as we can',
-    'get a connection.'
+    'changes have been saved locally and will be synced as soon as possible.',
+    'This message will not be displayed again this session.'
   ].join(' ');
 
   const button = document.createElement('button');
@@ -28,11 +28,13 @@ const makeNode = () => {
   };
 
   container.activate = prevElement => {
+    if (localStorage.getItem('user_warned') === 'true') return;
     button.onclick = event => {
       button.blur();
       if (prevElement) prevElement.focus();
       event.preventDefault();
     };
+    localStorage.setItem('user_warned', true);
     button.focus();
   };
 

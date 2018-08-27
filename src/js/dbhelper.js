@@ -272,6 +272,9 @@ export default class DBHelper {
       storeName: 'pendingFavorites', write: true
     });
     store.clear();
+    // now reset warning status ― user will be warned next time there is no
+    // connection
+    localStorage.removeItem('user_warned');
     return await tx.complete;
   }
 
