@@ -2,6 +2,11 @@ const unique = ls => ls.filter((v, i) => ls.indexOf(v) == i);
 const filterOnProp = (prop, key) => ls => ls.filter(x => x[prop] === key);
 const extractProp = prop => ls => unique(ls.map(x => x[prop]));
 
+const applyToPendingStores = async f => {
+  const pendingStoreNames = ['pendingReviews', 'pendingFavorites', 'pendingDeletions'];
+  return await Promise.all(pendingStoreNames.map(f));
+};
+
 /**
  * A wrapper for the restaurant JSON database.
  *
@@ -23,7 +28,7 @@ export default class DBHelper {
       this._dbPromise = null;
       return;
     }
-    this._dbPromise = idb.open(name, 2, upgradeDB => { /* eslint no-undef: 0 */
+    this._dbPromise = idb.open(name, 4, upgradeDB => { /* eslint no-undef: 0 */
       switch (upgradeDB.oldVersion) {
         case 0:
           upgradeDB.createObjectStore('restaurants', { keyPath: 'id' });
@@ -31,6 +36,10 @@ export default class DBHelper {
             createIndex('by-restaurant', 'restaurant_id');
         case 1: /* eslint no-fallthrough: 0 */
           upgradeDB.createObjectStore('pendingFavorites', { keyPath: 'id' });
+        case 2: /* eslint no-fallthrough: 0 */
+          upgradeDB.createObjectStore('pendingReviews', { keyPath: 'restaurant_id' });
+        case 3: /* eslint no-fallthrough: 0 */
+          upgradeDB.createObjectStore('pendingDeletions', { keyPath: 'id' });
       }
     });
     if (this._pendingCallback)
@@ -116,14 +125,22 @@ export default class DBHelper {
    */
   async fetch({storeName, restaurant_id, id, callback}) {
     let queryUrl = `${this.origin}/${storeName}/`;
+    let localResult;
     if (id) {
       queryUrl += id;
     } else if (restaurant_id) {
       id = restaurant_id;
       queryUrl += `?restaurant_id=${restaurant_id}`;
       storeName = 'by-restaurant';
+      // get locally stored (pending) reviews
+      const {tx, store} = await this.open({storeName: 'pendingReviews'});
+      localResult = await store.get(id);
+      await tx.complete;
     }
     const result = await this.get({storeName, id});
+    if (localResult)
+      result.push(localResult);
+
     if (callback)
       callback(result);
 
@@ -198,6 +215,99 @@ export default class DBHelper {
     return this.getPropertyValues({property: 'cuisine_type', callback});
   }
 
+  async deleteReview({id, restaurant_id}) {
+    // if the review has an ID then it's already on the server
+    // if not, it's local only. in this case, deletion is simple
+    console.log('ID:', id);
+    if (!id) {
+      console.log('Wiping pending reviews');
+      if (!restaurant_id) return;
+      const {tx, store} = await this.open({storeName: 'pendingReviews', write: true});
+      store.delete(restaurant_id);
+      return tx.complete;
+    } else {
+      localStorage.removeItem(`user-owns-review-${id}`);
+      const alreadyPending = await this._isPending();
+      const {tx, store} = await this.open({storeName: 'reviews', write: true});
+      store.delete(id);
+      await tx.complete;
+      if (! await this._deleteReviewNetworkFetch(id)) {
+        const {tx, store} = await this.open({storeName: 'pendingDeletions', write: true});
+        store.put({id, type: 'review'});
+        if (this._pendingCallback && !alreadyPending)
+          this._pendingCallback({pending: true});
+        await tx.complete;
+      }
+    }
+  }
+
+  async _deleteReviewNetworkFetch(id) {
+    const method = 'DELETE';
+    const url = `${this.origin}/reviews/${id}`;
+    try {
+      console.log(`fetch(${url}, {method: ${method}})`);
+      const response = await fetch(url, {method});
+      console.log(response);
+      if (response.status === 200)
+        return true;
+    } catch (err) {
+      console.log('Fetch failed:', err);
+    }
+    return false;
+  }
+
+  async _applyPendingNetworkDeletions() {
+    const {store} = await this.open({storeName: 'pendingDeletions'});
+    const pendingDeletions = await store.getAll();
+    const result = (await Promise.all(pendingDeletions.map(
+      ({id}) => this._deleteReviewNetworkFetch(id)
+    ))).every(x => x);
+    return result;
+  }
+
+  async saveReview({review, callback}) {
+    await this._tryPending();
+    const response = await this._saveReviewNetworkFetch(review);
+
+    if (response) {
+      localStorage.setItem(`user-owns-review-${response.id}`, true);
+      this.put({storeName: 'reviews', records: response});
+      callback(response);
+    } else {
+      const alreadyPending = await this._isPending();
+      const {tx, store} = await this.open({storeName: 'pendingReviews', write: true});
+      store.put(review);
+      if (this._pendingCallback && !alreadyPending) {
+        this._pendingCallback({pending: true});
+      }
+      callback(review);
+      await tx.complete;
+    }
+
+    return response;
+  }
+
+  async _saveReviewNetworkFetch({id, restaurant_id, name, rating, comments}) {
+    let method = id ? 'PUT' : 'POST';
+    const okCode = id ? 200 : 201;
+    let url = `${this.origin}/reviews`;
+    const body = { name, rating, comments };
+    if (id) {
+      url += `/${id}`;
+    } else {
+      body.restaurant_id = restaurant_id;
+    }
+    try {
+      const response = await fetch(url, {method, body: JSON.stringify(body)});
+      if (response.status === okCode) {
+        return await response.json();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    return null;
+  }
+
   async setFavorite({id, is_favorite}) {
     // we do not use our network wrapping functions here:
     // unlike reviews, we cannot PUT restaurants and so the network database
@@ -252,7 +362,7 @@ export default class DBHelper {
     return true;
   }
 
-  async _applyPendingNetwork() {
+  async _applyPendingNetworkFavorites() {
     const {tx, store} = await this.open({storeName: 'pendingFavorites'});
     const networkPromises = [];
     const changes = [];
@@ -264,21 +374,11 @@ export default class DBHelper {
     });
     await tx.complete;
     const success = (await Promise.all(networkPromises)).every(x => x === true);
-    return {changes, success};
+    await this._applyPendingLocalFavorites(changes);
+    return success;
   }
 
-  async _erasePending() {
-    const {tx, store} = await this.open({
-      storeName: 'pendingFavorites', write: true
-    });
-    store.clear();
-    // now reset warning status ― user will be warned next time there is no
-    // connection
-    localStorage.removeItem('user_warned');
-    return await tx.complete;
-  }
-
-  async _applyPendingLocal(changes) {
+  async _applyPendingLocalFavorites(changes) {
     const {tx, store} = await this.open({
       storeName: 'restaurants', write: true
     });
@@ -290,9 +390,46 @@ export default class DBHelper {
     return await tx.complete;
   }
 
+  async _applyPendingNetworkReviews() {
+    const {store} = await this.open({storeName: 'pendingReviews'});
+    const pendingReviews = await store.getAll();
+    const changes = await Promise.all(pendingReviews.map(
+      this._saveReviewNetworkFetch.bind(this)
+    ));
+    const success = changes.every(x => x);
+    await this._applyPendingLocalReviews(changes.filter(x => x));
+    return success;
+  }
+
+  async _applyPendingLocalReviews(changes) {
+    const {tx, store} = await this.open({storeName: 'reviews', write: true});
+    changes.forEach(review => {
+      store.put(review);
+      localStorage.setItem(`user-owns-review-${review.id}`, true);
+    });
+    return tx.complete;
+  }
+
+  async _erasePending(storeName) {
+    if (!storeName) {
+      await applyToPendingStores(this._erasePending.bind(this));
+      // now reset warning status ― user will be warned next time there is no
+      // connection
+      localStorage.removeItem('user_warned');
+      return;
+    }
+    const {tx, store} = await this.open({storeName, write: true});
+    store.clear();
+    return await tx.complete;
+  }
+
   async _tryPending() {
     if (!await this._isPending()) return;
-    const {success, changes} = await this._applyPendingNetwork();
+    const success = (await Promise.all([
+      this._applyPendingNetworkFavorites(),
+      this._applyPendingNetworkReviews(),
+      this._applyPendingNetworkDeletions()
+    ])).every(x => x);
     if (success) {
       // if we successfully reconciled with network, wipe pending transactions
       // from IDB
@@ -300,12 +437,15 @@ export default class DBHelper {
       if (this._pendingCallback)
         this._pendingCallback({pending: false});
     }
-    // either way, ensure pending changes are applied locally
-    return await this._applyPendingLocal(changes);
   }
 
-  async _isPending() {
-    const {tx, store} = await this.open({storeName: 'pendingFavorites'});
+  async _isPending(storeName) {
+    if (!storeName) {
+      return (await applyToPendingStores(x => this._isPending(x))).
+        some(x => x);
+    }
+
+    const {tx, store} = await this.open({storeName});
     let pending = (await store.count()) > 0;
     await tx.complete;
     return pending;

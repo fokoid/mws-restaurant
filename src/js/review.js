@@ -2,7 +2,7 @@ class ReviewForm {
   constructor({restaurant_id, submitCallback} = {}) {
     const li = document.createElement('li');
     li.id = 'user-review';
-    li.classList.add('card', 'review', 'user-review');
+    li.classList.add('card', 'review', 'review-form');
 
     const header = document.createElement('div');
     li.appendChild(header);
@@ -14,11 +14,19 @@ class ReviewForm {
     const hiddenID = document.createElement('input');
     form.appendChild(hiddenID);
     form.method = 'POST';
-    form.onsubmit = event => {
-      if (submitCallback)
-        submitCallback();
+    form.addEventListener('submit', event => {
       event.preventDefault();
-    };
+      const data = new FormData(event.target);
+      if (submitCallback) {
+        submitCallback({
+          id: parseInt(data.get('id')),
+          restaurant_id: parseInt(data.get('restaurant_id')),
+          name: data.get('name'),
+          rating: data.get('rating'),
+          comments: data.get('comments')
+        });
+      }
+    });
     hiddenID.type = 'hidden';
     hiddenID.name = 'id';
 
@@ -46,6 +54,7 @@ class ReviewForm {
       radio.type = 'radio';
       radio.name = 'rating';
       radio.id = `rating-${r}`;
+      radio.value = r;
       radio.required = 'required';
       radio.setAttribute('aria-label', r);
       return radio;
@@ -54,6 +63,8 @@ class ReviewForm {
     const textarea = document.createElement('textarea');
     form.appendChild(textarea);
     textarea.name = 'comments';
+    textarea.placeholder = 'Enter comments…';
+    textarea.setAttribute('aria-label', 'Enter comments…');
 
     const submitButton = document.createElement('button');
     form.appendChild(submitButton);
@@ -70,7 +81,6 @@ class ReviewForm {
     };
 
     this.reset = review => {
-      console.log(review);
       if (!review) {
         this.clear();
         return ;
@@ -79,8 +89,8 @@ class ReviewForm {
       header.innerHTML = 'Edit your review…';
       hiddenID.value = review.id;
       hiddenRestaurantID.value = review.restaurant_id;
-      nameInput.value = review.reviewer;
-      textarea.value = review.text;
+      nameInput.value = review.name;
+      textarea.value = review.comments;
       radios.forEach(radio => {
         if (review && `rating-${review.rating}` === radio.id)
           radio.checked = 'checked';
@@ -107,7 +117,7 @@ class Review {
   get id() { return this._data.id; }
   get restaurant_id() { return this._data.restaurant_id; }
   get isUserOwned() {
-    return localStorage.getItem(`user-owns-review-${this.id}`) !== null;
+    return isNaN(this.id) || localStorage.getItem(`user-owns-review-${this.id}`) !== null;
   }
   get reviewer() { return this._data.name; }
   get rating() { return this._data.rating; }
@@ -116,7 +126,7 @@ class Review {
   }
   get date() { return new Date(this._data.updatedAt); }
   get text() { return this._data.comments; }
-  get cardHTML() {
+  get node() {
     if (!this._cardNode) this._cardNode = this.makeCardHTML();
     return this._cardNode;
   }
@@ -124,62 +134,74 @@ class Review {
   makeCardHTML() {
     const li = document.createElement('li');
     li.classList.add('card', 'review');
-    if (this.isUserOwned)
-      li.classList.add('user-review');
-    li.appendChild(this._makeHeader());
-    li.appendChild(this._makeText());
-    if (this.isUserOwned)
-      li.appendChild(this._makeButtons());
-    return li;
-  }
 
-  _makeHeader() {
     const header = document.createElement('div');
     header.classList.add('review-header', 'card-header');
+    li.appendChild(header);
 
     const name = document.createElement('span');
-    name.innerHTML = this.reviewer;
     name.classList.add('review-name');
     header.appendChild(name);
 
     const rating = document.createElement('span');
-    rating.innerHTML = '★'.repeat(this.rating);
     rating.classList.add('review-rating');
-    rating.setAttribute('aria-label', this.ratingText);
     header.appendChild(rating);
 
     const date = document.createElement('span');
-    date.innerHTML = this.date.toLocaleDateString('en-gb', {
-      day: '2-digit', month: 'long', year: 'numeric'
-    });
     date.classList.add('review-date');
     header.appendChild(date);
 
-    return header;
-  }
-
-  _makeText() {
     const text = document.createElement('p');
-    text.innerHTML = this.text;
     text.classList.add('review-text');
-    return text;
-  }
+    li.appendChild(text);
 
-  _makeButtons() {
-    const container = document.createElement('div');
+    const buttonContainer = document.createElement('div');
+    li.appendChild(buttonContainer);
 
     const edit = document.createElement('button');
-    container.appendChild(edit);
+    buttonContainer.appendChild(edit);
     edit.classList.add('icon-button', 'edit');
     edit.setAttribute('aria-label', 'Edit');
-    edit.addEventListener('click', this._editCallback);
+    if (this._editCallback)
+      edit.addEventListener('click', this._editCallback);
 
     const del = document.createElement('button');
-    container.appendChild(del);
+    buttonContainer.appendChild(del);
     del.classList.add('icon-button', 'delete');
     del.setAttribute('aria-label', 'Delete');
+    if (this._deleteCallback) {
+      del.addEventListener('click', () => {
+        this._deleteCallback({id: this.id, restaurant_id: this.restaurant_id});
+      });
+    }
 
-    return container;
+    this.fillData = data => {
+      if (!data) return;
+      this._data = data;
+
+      li.id = `review-${this.id}`;
+      name.innerHTML = this.reviewer;
+      rating.innerHTML = '★'.repeat(this.rating);
+      rating.setAttribute('aria-label', this.ratingText);
+      let theDate = this.date;
+      if (isNaN(Date.parse(this._data.updatedAt))) {
+        theDate = new Date();
+      }
+      date.innerHTML = theDate.toLocaleDateString('en-gb', {
+        day: '2-digit', month: 'long', year: 'numeric'
+      });
+      text.innerHTML = this.text;
+      if (this.isUserOwned) {
+        li.classList.add('user-review');
+        buttonContainer.classList.remove('inactive');
+      } else {
+        li.classList.remove('user-review');
+        buttonContainer.classList.add('inactive');
+      }
+    };
+    this.fillData(this._data);
+
+    return li;
   }
 }
 

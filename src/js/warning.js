@@ -11,9 +11,9 @@ const makeNode = () => {
   container.appendChild(inner);
 
   inner.innerHTML = [
-    'You are not currently connected to the network. Don\'t worry ― your',
+    'You are not currently connected to the network. Don\'t worry − your',
     'changes have been saved locally and will be synced as soon as possible.',
-    'This message will not be displayed again this session.'
+    'This message will not be displayed again until during this offline session.'
   ].join(' ');
 
   const button = document.createElement('button');

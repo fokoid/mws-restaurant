@@ -1,4 +1,4 @@
-const CACHE_VERSION = 55;
+const CACHE_VERSION = 62;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
@@ -30,7 +30,11 @@ const URL_LIST = [
 
 self.addEventListener('install', event => void event.waitUntil((async () => {
   const cache = await caches.open(CACHE_NAME);
-  return await cache.addAll(URL_LIST);
+  try {
+    return await cache.addAll(URL_LIST);
+  } catch (err) {
+    console.err(err);
+  }
 })()));
 
 self.addEventListener('activate', event => void event.waitUntil((async() => {

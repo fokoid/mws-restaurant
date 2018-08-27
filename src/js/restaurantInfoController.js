@@ -23,7 +23,6 @@ export default class RestaurantInfoController {
   constructor(container) {
     this._container = container;
     this._warningNode = getWarning();
-    this._reviewForm = new ReviewForm();
     this._db = new DBHelper({
       pendingCallback: ({pending}) => {
         if (pending) {
@@ -43,13 +42,25 @@ export default class RestaurantInfoController {
       console.error('No restaurant id in URL');
       return;
     }
+    this._userReview = this._makeReview();
+    this._reviewForm = new ReviewForm({
+      restaurant_id: this._data.id,
+      submitCallback: review => {
+        this._db.saveReview({review, callback: r => this._fillUserReviewHTML(r)});
+        this._reviewForm.hide();
+      }
+    });
     document.addEventListener('DOMContentLoaded', () => void this._init());
   }
 
   async _init() {
     document.getElementsByTagName('header')[0].appendChild(this._warningNode);
     this._warningNode.enableAnimation();
-    document.getElementById('reviews-list').appendChild(this._reviewForm.node);
+    const reviewsList = document.getElementById('reviews-list');
+    reviewsList.appendChild(this._reviewForm.node);
+    reviewsList.appendChild(this._userReview.node);
+    this._hideUserReview();
+
     this._data.restaurant = new Restaurant({
       data: await this._db.getRestaurant({
         id: this._data.id,
@@ -64,6 +75,7 @@ export default class RestaurantInfoController {
     });
     this._initMap();
   }
+
 
   _fillRestaurantHTML() {
     this._data.restaurant.fillDetailsHTML({
@@ -86,32 +98,70 @@ export default class RestaurantInfoController {
     breadcrumb.appendChild(li);
   }
 
+  _makeReview(data) {
+    return new Review({
+      data,
+      editCallback: () => {
+        this._hideUserReview();
+        this._reviewForm.show();
+      },
+      deleteCallback: ({id, restaurant_id}) => {
+        this._hideUserReview();
+        this._reviewForm.reset();
+        this._reviewForm.show();
+        this._db.deleteReview({id, restaurant_id});
+      }
+    });
+  }
+
   _fillReviewsHTML(reviews) {
     if (!reviews || reviews.length === 0) {
       return;
     }
-    const oldIDs = this._data.reviews.map(review => review.id);
-    reviews = reviews.filter(review => !oldIDs.includes(review.id));
-    const reviewsToInsert = reviews.map(data => new Review({
-      data, editCallback: () => this._reviewForm.show()
-    }));
-    this._data.reviews = this._data.reviews.concat(reviewsToInsert);
-
-    const ul = document.getElementById('reviews-list');
-    const userReviews = this._data.reviews.filter(r => r.isUserOwned);
-    const userReview = userReviews.length !== 0 && userReviews[0];
-    if (userReviews.length > 1)
-      console.log('Warning: multiple user reviews for restaurant.');
-
-    if (!userReview) {
+    const userReviews = [], otherReviews = [];
+    for (const review of reviews) {
+      if (isNaN(review.id) || localStorage.getItem(`user-owns-review-${review.id}`) === 'true') {
+        userReviews.push(review);
+      } else {
+        otherReviews.push(review);
+      }
+    }
+    if (userReviews.length > 1) {
+      console.error('Multiple user reviews');
+    }
+    if (userReviews.length === 0) {
+      this._hideUserReview();
       this._reviewForm.reset();
       this._reviewForm.show();
     } else {
-      this._reviewForm.reset(userReview);
+      this._fillUserReviewHTML(userReviews[0]);
+      this._reviewForm.reset(userReviews[0]);
       this._reviewForm.hide();
     }
 
-    reviewsToInsert.forEach(review => void ul.appendChild(review.cardHTML));
+    const oldIDs = this._data.reviews.map(review => review.id);
+    reviews = otherReviews.
+      filter(review => !oldIDs.includes(review.id)).
+      map(data => this._makeReview(data));
+    this._data.reviews = this._data.reviews.concat(reviews);
+
+    const ul = document.getElementById('reviews-list');
+    reviews.reverse().forEach(review => void ul.appendChild(review.node));
+  }
+
+  _fillUserReviewHTML(review) {
+    console.log(review, this._userReview, this._userReview);
+    if (!review) return;
+    this._userReview.fillData(review);
+    this._showUserReview();
+  }
+
+  _hideUserReview() {
+    if (this._userReview) this._userReview.node.classList.add('inactive');
+  }
+
+  _showUserReview() {
+    if (this._userReview) this._userReview.node.classList.remove('inactive');
   }
 
   _initMap() {
