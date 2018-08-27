@@ -8,8 +8,10 @@
 
 ### Licenses
 
-* Heart SVG modified for colour and fix, taken from the
-  [Feather](https://feathericons.com) icon set, licensed under the MIT license.
+* SVG icons (modified for fill and color) from the
+  [Feather](https://feathericons.com) icon set (MIT license).
+* App icon and placeholder use the [Poiret
+  One](https://fonts.google.com/specimen/Poiret+One) font (Open Font License).
 
 ### Custom Build Instructions
 
