@@ -75,9 +75,12 @@ nav {
 .breadcrumb {
   max-width: $width-large;
   margin: 0 auto;
-  margin-right: 60px;
   padding: 16px 24px;
   list-style: none;
+  max-height: 1.2em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
 
   /* Display list items side by side */
   li {
@@ -240,14 +243,14 @@ nav {
   }
 
   main {
-    margin-top: 199px;
+    margin-top: 193px;
 
     @media screen and (max-width: $width-small) {
-      margin-top: 179px;
+      margin-top: 173px;
     }
 
     @media screen and (min-width: $width-minor) {
-      margin-top: 171px;
+      margin-top: 165px;
     }
   }
 
@@ -341,10 +344,15 @@ nav {
       }
     }
 
+    div {
+      overflow-x: scroll;
+    }
+
     table {
       margin: 0;
       border: none;
       width: 100%;
+      min-width: 340px;
       max-width: 400px;
     }
 
