@@ -14,11 +14,10 @@
 
 .favorite {
   color: rgba(255, 255, 255, 0.3);
-  position: absolute;
-  left: 20px;
   z-index: 100;
   appearance: none;
   font-size: 64px;
+  line-height: 1em;
 
   &::before {
     content: '♥';
@@ -30,5 +29,12 @@
 
   &:checked {
     color: $color-brand;
+  }
+}
+
+.restaurants-list {
+  .favorite {
+    position: absolute;
+    left: 20px;
   }
 }

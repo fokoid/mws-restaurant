@@ -27,6 +27,9 @@ export default class IndexController {
   }
 
   _updateContent() {
+    document.getElementById('favorites-select').addEventListener(
+      'change', () => void this._updateRestaurants()
+    );
     this._fillNeighborhoodsHTML();
     this._fillCuisinesHTML();
     this._updateRestaurants();
@@ -36,7 +39,7 @@ export default class IndexController {
     this._data.neighborhoods = extractProp('neighborhood')(this._data.restaurants);
 
     const select = document.getElementById('neighborhoods-select');
-    select.onchange = () => this._updateRestaurants();
+    select.addEventListener('change', () => void this._updateRestaurants());
     const currentValues = Array.from(select.children).
       map(option => option.innerHTML);
     this._data.neighborhoods.forEach(neighborhood => {
@@ -53,7 +56,7 @@ export default class IndexController {
     this._data.cuisines = extractProp('cuisine')(this._data.restaurants);
 
     const select = document.getElementById('cuisines-select');
-    select.onchange = () => this._updateRestaurants();
+    select.addEventListener('change', () => void this._updateRestaurants());
     const currentValues = Array.from(select.children).
       map(option => option.innerHTML);
     this._data.cuisines.forEach(cuisine => {
@@ -66,8 +69,10 @@ export default class IndexController {
     });
   }
 
-  _searchRestaurants({cuisine, neighborhood}) {
+  _searchRestaurants({favorites, cuisine, neighborhood}) {
     let results = this._data.restaurants;
+    if (favorites === true)
+      results = results.filter(restaurant => restaurant.isFavorite);
     if (cuisine && cuisine != 'all')
       results = results.filter(restaurant => restaurant.cuisine === cuisine);
     if (neighborhood && neighborhood != 'all')
@@ -88,16 +93,20 @@ export default class IndexController {
 
   _updateRestaurants() {
     this._clearRestaurants();
+    const fSelect = document.getElementById('favorites-select');
     const cSelect = document.getElementById('cuisines-select');
     const nSelect = document.getElementById('neighborhoods-select');
 
     const cIndex = cSelect.selectedIndex;
     const nIndex = nSelect.selectedIndex;
 
+    const favorites = fSelect.checked;
     const cuisine = cSelect[cIndex].value;
     const neighborhood = nSelect[nIndex].value;
 
-    this._fillRestaurantsHTML(this._searchRestaurants({cuisine, neighborhood}));
+    this._fillRestaurantsHTML(this._searchRestaurants({
+      favorites, cuisine, neighborhood
+    }));
   }
 
   _fillRestaurantsHTML(restaurants) {

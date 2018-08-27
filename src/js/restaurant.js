@@ -85,6 +85,7 @@ export default class Restaurant {
     fav.onchange = () => {
       // this checkbox has no ID but we still have right when we need it
       // #yayclosures ☺ ☺ ☺
+      this._data.is_favorite = fav.checked;
       this._setFavorite({id: this.id, is_favorite: fav.checked});
     };
     return fav;
