@@ -6,6 +6,7 @@
 @import 'vars';
 @import 'card';
 @import 'buttons';
+@import 'warning';
 
 body, select {
   font-family: $font-stack;
@@ -16,6 +17,10 @@ body, select {
 body {
   color: $color-fg;
   background-color: $color-bg;
+}
+
+.no-animate {
+  transition: none !important;
 }
 
 a {

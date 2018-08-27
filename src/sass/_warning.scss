@@ -1,0 +1,32 @@
+.network-warning {
+  z-index: 100000;
+  position: fixed;
+  transform: translateY(-300px);
+  color: white;
+  width: 100%;
+  top: 0;
+  background-color: $color-brand;
+  min-height: 75px;
+  transition: transform 0.5s ease-in 0s;
+
+  &:focus-within {
+    transform: none;
+  }
+
+  div {
+    margin: 0 auto;
+    max-width: 1500px;
+    padding: 10px 20px 20px;
+  }
+
+  button {
+    appearance: none;
+    border: none;
+    background: url('/icon/x-circle.svg');
+    background-size: 100%;
+    width: 48px;
+    height: 48px;
+    float: right;
+    margin: 16px;
+  }
+}
