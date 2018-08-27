@@ -13,14 +13,14 @@
 }
 
 .favorite {
-  background-image: url('/heart.svg');
+  background-image: url('/icon/heart.svg');
   background-size: 100%;
   appearance: none;
   width: 48px;
   height: 48px;
 
   &:checked {
-    background-image: url('/heart-filled.svg');
+    background-image: url('/icon/heart-filled.svg');
   }
 }
 

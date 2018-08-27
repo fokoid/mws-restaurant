@@ -11,8 +11,8 @@ const sassPattern = path.join(srcDir, 'sass', '**/*.scss');
 const swPattern = path.join(srcDir, 'sw.js');
 const jsPattern = path.join(srcDir, 'js', '**/*.js');
 
-const imagePattern = path.join(srcDir, 'img', '**/*.jpg');
-const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.{png,svg}');
+const imagePattern = path.join(srcDir, 'img', '**/*.{jpg,png}');
+const iconPattern = path.join(srcDir, 'icon', '**/*.{png,svg}');
 
 module.exports = {
   dirname: __dirname,

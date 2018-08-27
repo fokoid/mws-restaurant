@@ -1,4 +1,4 @@
-const CACHE_VERSION = 53;
+const CACHE_VERSION = 54;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
@@ -13,12 +13,15 @@ const URL_LIST = [
   '/js/review.js',
   '/css/styles.css',
   '/manifest.json',
-  '/icon-16.png',
-  '/icon-32.png',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/icon/app-16.png',
+  '/icon/app-32.png',
+  '/icon/app-192.png',
+  '/icon/app-512.png',
+  '/icon/heart.svg',
+  '/icon/heart-filled.svg',
+  '/icon/x-circle.svg',
+  '/icon/alert-triangle.svg',
   '/favicon.ico',
-  '/heart.svg',
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png',

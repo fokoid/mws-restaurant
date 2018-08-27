@@ -7,6 +7,7 @@ module.exports = ({gulp, config, imports}) => {
     responsive
   } = imports;
   const imgDir = path.join(config.distDir, 'img');
+  const iconDir = path.join(config.distDir, 'icon');
 
   gulp.task('images:clean', () => del([imgDir]));
   gulp.task('images:mkdir', gulp.series('images:clean', () => mkdir(imgDir)));
@@ -22,19 +23,23 @@ module.exports = ({gulp, config, imports}) => {
 
     return gulp.src(config.patterns.image).
       pipe(responsive({
-        '*.jpg': sizes('jpg').concat(sizes('webp'))
+        '*.jpg': sizes('jpg').concat(sizes('webp')),
+        '*.png': sizes('png')
       }, {
         quality: config.image.quality,
         progressive: true,
         widthMetadata: false,
         errorOnEnlargment: true
       })).
-      pipe(gulp.dest(path.join(config.distDir, 'img')));
+      pipe(gulp.dest(imgDir));
   });
+
+  gulp.task('icons:clean', () => del([iconDir]));
+  gulp.task('icons:mkdir', gulp.series('icons:clean', () => mkdir(iconDir)));
 
   gulp.task('icons:copy', () => {
     return gulp.src(config.patterns.icon).
-      pipe(gulp.dest(config.distDir));
+      pipe(gulp.dest(iconDir));
   });
 
   gulp.task('images', gulp.series(
