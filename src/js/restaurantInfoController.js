@@ -55,7 +55,8 @@ export default class RestaurantInfoController {
       cuisine: document.getElementById('restaurant-cuisine'),
       address: document.getElementById('restaurant-address'),
       picture: document.getElementById('restaurant-img'),
-      hoursTable: document.getElementById('restaurant-hours')
+      hoursTable: document.getElementById('restaurant-hours'),
+      favorite: document.getElementById('favorite')
     });
   }
 

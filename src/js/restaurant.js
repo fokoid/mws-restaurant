@@ -82,12 +82,12 @@ export default class Restaurant {
     fav.type = 'checkbox';
     fav.classList.add('favorite');
     fav.setAttribute('aria-label', `Favorite ${this.name}`);
-    fav.onchange = () => {
+    fav.addEventListener('change', () => {
       // this checkbox has no ID but we still have right when we need it
       // #yayclosures ☺ ☺ ☺
       this._data.is_favorite = fav.checked;
       this._setFavorite({id: this.id, is_favorite: fav.checked});
-    };
+    });
     return fav;
   }
 
@@ -133,10 +133,21 @@ export default class Restaurant {
     picture.appendChild(image);
   }
 
-  fillDetailsHTML({name, cuisine, address, picture, hoursTable}) {
+  fillDetailsHTML({name, favorite, cuisine, address, picture, hoursTable}) {
     name.innerHTML = this.name;
     cuisine.innerHTML = this.cuisine;
     address.innerHTML = this.address;
+    if (this.isFavorite)
+      favorite.setAttribute('checked', 'checked');
+    else
+      favorite.removeAttribute('checked');
+    favorite.addEventListener('change', () => {
+      // this checkbox has no ID but we still have right when we need it
+      // #yayclosures ☺ ☺ ☺
+      this._data.is_favorite = favorite.checked;
+      this._setFavorite({id: this.id, is_favorite: favorite.checked});
+    });
+    favorite.setAttribute('aria-label', `Favorite ${this.name}`);
     this._fillPicture(picture, [
       '(min-width: 1024px) 492px',
       '(min-width: 768px) 50vw',

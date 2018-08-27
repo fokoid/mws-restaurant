@@ -12,7 +12,7 @@ const swPattern = path.join(srcDir, 'sw.js');
 const jsPattern = path.join(srcDir, 'js', '**/*.js');
 
 const imagePattern = path.join(srcDir, 'img', '**/*.jpg');
-const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.png');
+const iconPattern = path.join(srcDir, 'img', 'fixed', '**/*.{png,svg}');
 
 module.exports = {
   dirname: __dirname,

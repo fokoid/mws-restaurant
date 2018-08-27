@@ -18,6 +18,7 @@ const URL_LIST = [
   '/icon-192.png',
   '/icon-512.png',
   '/favicon.ico',
+  '/heart.svg',
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js',
   'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
   'https://unpkg.com/leaflet@1.3.1/dist/images/marker-icon.png',

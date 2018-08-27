@@ -75,6 +75,7 @@ nav {
 .breadcrumb {
   max-width: $width-large;
   margin: 0 auto;
+  margin-right: 60px;
   padding: 16px 24px;
   list-style: none;
 
@@ -135,11 +136,6 @@ nav {
     margin: 10px 20px;
     width: 70%;
     flex-grow: 1;
-  }
-
-  .favorite {
-    margin-right: 10px;
-    padding-right: 10px;
   }
 
   select {
@@ -266,6 +262,10 @@ nav {
     height: 100%;
     width: 100%;
   }
+
+  ul {
+    position: relative;
+  }
 }
 
 .restaurant-container {
@@ -320,6 +320,7 @@ nav {
 
   .restaurant-img-cuisine,
   .restaurant-hours-address {
+    position: relative;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;

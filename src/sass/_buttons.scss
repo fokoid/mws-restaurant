@@ -13,28 +13,31 @@
 }
 
 .favorite {
-  color: rgba(255, 255, 255, 0.3);
-  z-index: 100;
+  background-image: url('/heart.svg');
+  background-size: 100%;
   appearance: none;
-  font-size: 64px;
-  line-height: 1em;
-
-  &::before {
-    content: '♥';
-
-    &:hover {
-      color: rgba($color-brand, 0.3);
-    }
-  }
+  width: 48px;
+  height: 48px;
 
   &:checked {
-    color: $color-brand;
+    background-image: url('/heart-filled.svg');
   }
 }
 
-.restaurants-list {
+.restaurants-list,
+.inside {
   .favorite {
     position: absolute;
+    width: 64px;
+    height: 64px;
     left: 20px;
+    top: 10px;
+  }
+}
+
+.filter-options {
+  .favorite {
+    margin-right: 10px;
+    padding-right: 10px;
   }
 }

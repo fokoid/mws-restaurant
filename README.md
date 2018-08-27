@@ -6,6 +6,11 @@
 
 ## Project Overview: Stage 1
 
+### Licenses
+
+* Heart SVG modified for colour and fix, taken from the
+  [Feather](https://feathericons.com) icon set, licensed under the MIT license.
+
 ### Custom Build Instructions
 
 #### Quick Version
