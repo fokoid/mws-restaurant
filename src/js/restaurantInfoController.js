@@ -1,6 +1,6 @@
 import DBHelper from '/js/dbhelper.js';
 import Restaurant from '/js/restaurant.js';
-import Review from '/js/review.js';
+import {Review, ReviewForm} from '/js/review.js';
 import getWarning from '/js/warning.js';
 
 /**
@@ -23,6 +23,7 @@ export default class RestaurantInfoController {
   constructor(container) {
     this._container = container;
     this._warningNode = getWarning();
+    this._reviewForm = new ReviewForm();
     this._db = new DBHelper({
       pendingCallback: ({pending}) => {
         if (pending) {
@@ -48,6 +49,7 @@ export default class RestaurantInfoController {
   async _init() {
     document.getElementsByTagName('header')[0].appendChild(this._warningNode);
     this._warningNode.enableAnimation();
+    document.getElementById('reviews-list').appendChild(this._reviewForm.node);
     this._data.restaurant = new Restaurant({
       data: await this._db.getRestaurant({
         id: this._data.id,
@@ -90,13 +92,26 @@ export default class RestaurantInfoController {
     }
     const oldIDs = this._data.reviews.map(review => review.id);
     reviews = reviews.filter(review => !oldIDs.includes(review.id));
-    const reviewsToInsert = reviews.map(data => new Review(data));
+    const reviewsToInsert = reviews.map(data => new Review({
+      data, editCallback: () => this._reviewForm.show()
+    }));
     this._data.reviews = this._data.reviews.concat(reviewsToInsert);
 
     const ul = document.getElementById('reviews-list');
-    reviewsToInsert.forEach(review => {
-      ul.appendChild(review.cardHTML);
-    });
+    const userReviews = this._data.reviews.filter(r => r.isUserOwned);
+    const userReview = userReviews.length !== 0 && userReviews[0];
+    if (userReviews.length > 1)
+      console.log('Warning: multiple user reviews for restaurant.');
+
+    if (!userReview) {
+      this._reviewForm.reset();
+      this._reviewForm.show();
+    } else {
+      this._reviewForm.reset(userReview);
+      this._reviewForm.hide();
+    }
+
+    reviewsToInsert.forEach(review => void ul.appendChild(review.cardHTML));
   }
 
   _initMap() {

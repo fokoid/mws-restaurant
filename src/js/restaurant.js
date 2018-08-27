@@ -82,7 +82,7 @@ export default class Restaurant {
   _makeFavoriteButton() {
     const fav = document.createElement('input');
     fav.type = 'checkbox';
-    fav.classList.add('favorite');
+    fav.classList.add('icon-button', 'favorite');
     fav.setAttribute('aria-label', `Favorite ${this.name}`);
     fav.addEventListener('change', () => {
       // this checkbox has no ID but we still have right when we need it

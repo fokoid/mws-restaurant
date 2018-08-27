@@ -440,6 +440,10 @@ screen and (min-width: $width-large) and (max-width: 1499px) {
   }
 }
 
+.reviews-list .inactive {
+  display: none;
+}
+
 /* ====================== Footer ====================== */
 footer {
   background-color: $color-fg;
