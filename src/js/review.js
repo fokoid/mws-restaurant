@@ -6,6 +6,7 @@ class ReviewForm {
 
     const header = document.createElement('div');
     li.appendChild(header);
+    header.innerHTML = 'Please submit your review';
     header.classList.add('card-header', 'review-header');
 
     const form = document.createElement('form');
