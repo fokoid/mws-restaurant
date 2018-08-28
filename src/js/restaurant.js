@@ -18,7 +18,7 @@ export default class Restaurant {
   get imageAltText() {
     if ('photograph_alt' in this._data)
       return this._data.photograph_alt;
-    return this.name;
+    return `${this.name} Restaurant`;
   }
   imageUrl(width=800, format='jpg') {
     if (!this._data.photograph)
