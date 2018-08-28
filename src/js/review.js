@@ -40,14 +40,12 @@ class ReviewForm {
 
     const nameLabel = document.createElement('label');
     container.appendChild(nameLabel);
-    nameLabel.id = 'review-form-name';
     nameLabel.innerHTML = 'Name';
 
     const nameInput = document.createElement('input');
     nameLabel.appendChild(nameInput);
     nameInput.type = 'text';
     nameInput.name = 'name';
-    nameInput.setAttribute('aria-labelledby', 'review-form-name');
     nameInput.required = 'required';
 
     const ratingContainer = document.createElement('fieldset');
@@ -57,7 +55,6 @@ class ReviewForm {
     ratingContainer.appendChild(ratingLabel);
     ratingLabel.innerHTML = 'Rating';
 
-    form.setAttribute('aria-label', 'Rating');
     const radios = [1, 2, 3, 4, 5].map(r => {
       const radio = document.createElement('input');
       ratingContainer.appendChild(radio);
@@ -187,14 +184,14 @@ class Review {
     const edit = document.createElement('button');
     buttonContainer.appendChild(edit);
     edit.classList.add('icon-button', 'edit');
-    edit.setAttribute('aria-label', 'Edit');
+    edit.setAttribute('aria-label', 'Edit review');
     if (this._editCallback)
       edit.addEventListener('click', this._editCallback);
 
     const del = document.createElement('button');
     buttonContainer.appendChild(del);
     del.classList.add('icon-button', 'delete');
-    del.setAttribute('aria-label', 'Delete');
+    del.setAttribute('aria-label', 'Delete review');
     if (this._deleteCallback) {
       del.addEventListener('click', () => {
         this._deleteCallback({id: this.id, restaurant_id: this.restaurant_id});
