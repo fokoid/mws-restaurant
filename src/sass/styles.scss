@@ -136,6 +136,14 @@ nav {
   justify-content: space-between;
   padding: 5px 0;
 
+  .favorite, select {
+    &:focus {
+      //background-color: rgba($color-brand-light, 0.5);
+      border-radius: 5px;
+      outline-color: black;
+    }
+  }
+
   h2 {
     color: white;
     font-size: 1.2em;
