@@ -32,6 +32,21 @@
   background-image: url('/icon/trash-2.svg');
 }
 
+.review-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.user-review {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
+
+  p {
+    flex-grow: 1;
+  }
+}
+
 .edit,
 .delete {
   padding: 5px;
@@ -58,10 +73,8 @@
 .inside {
   .favorite {
     position: absolute;
-    width: 64px;
-    height: 64px;
-    left: 20px;
-    top: 10px;
+    left: 12px;
+    top: 8px;
   }
 }
 

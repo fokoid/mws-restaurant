@@ -95,8 +95,18 @@ export default class Restaurant {
 
   _makeButtons() {
     const container = document.createElement('div');
+    //container.appendChild(this._makeButtonReviews());
     container.appendChild(this._makeButtonDetails());
     return container;
+  }
+
+  _makeButtonReviews() {
+    const reviews = document.createElement('a');
+    reviews.classList.add('brand-button');
+    reviews.innerHTML = 'Reviews';
+    reviews.setAttribute('aria-label', `${this.name} reviews`);
+    reviews.href = `${this.url}#reviews`;
+    return reviews;
   }
 
   _makeButtonDetails() {

@@ -13,7 +13,7 @@ const makeNode = () => {
   inner.innerHTML = [
     'You are not currently connected to the network. Don\'t worry − your',
     'changes have been saved locally and will be synced as soon as possible.',
-    'This message will not be displayed again until during this offline session.'
+    'This message will not be displayed again during the present offline session.'
   ].join(' ');
 
   const button = document.createElement('button');

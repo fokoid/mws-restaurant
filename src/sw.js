@@ -1,4 +1,4 @@
-const CACHE_VERSION = 62;
+const CACHE_VERSION = 63;
 const CACHE_PREFIX = 'restaurant-reviews-';
 const CACHE_NAME = `${CACHE_PREFIX}v${CACHE_VERSION}`;
 const IMG_CACHE_NAME = `${CACHE_PREFIX}images`;
@@ -53,7 +53,11 @@ self.addEventListener('fetch', event => void event.respondWith((async () => {
     return fetchImg(event.request);
   if (url.pathname.startsWith('/restaurant.html')) {
     const cache = await caches.open(CACHE_NAME);
-    return await cache.match('/restaurant.html');
+    try {
+      return await cache.match('/restaurant.html');
+    } catch (err) {
+      console.log(err);
+    }
   }
   const match = await caches.match(event.request);
   if (match) return match;

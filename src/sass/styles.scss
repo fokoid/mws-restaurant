@@ -234,7 +234,23 @@ nav {
   a {
     margin: 5px;
     width: calc(100% - 2 * 5px);
-    border-radius: 5px 5px 25px 5px;
+    border-radius: 5px;
+
+    &:last-of-type {
+      border-bottom-right-radius: 25px;
+    }
+
+    //@media screen and (min-width: $width-minor) {
+    //  width: calc(50% - 2 * 5px);
+    //}
+    //
+    //@media screen and (min-width: $width-mid) {
+    //  width: calc(45% - 2 * 5px);
+    //
+    //  &:last-of-type {
+    //    width: calc(55% - 2 * 5px);
+    //  }
+    //}
   }
 }
 
@@ -389,6 +405,8 @@ nav {
     padding-bottom: 1pt;
     padding: 0 20px;
     margin: 20px 0 0;
+    padding-top: 200px;
+    margin-top: -180px;
 
     @media screen and (min-width: $width-minor) {
       font-size: 2em;
@@ -442,6 +460,65 @@ screen and (min-width: $width-large) and (max-width: 1499px) {
 
 .reviews-list .inactive {
   display: none;
+}
+
+.review-form {
+  display: flex;
+  flex-flow: column nowrap;
+
+  form {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    flex-grow: 1;
+    padding: 10px;
+  }
+
+  label {
+    width: 100%;
+  }
+
+  input[type='text'] {
+    margin: 10px 0;
+  }
+
+  input[type='text'],
+  textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: calc(100% - 2 * 10px);
+  }
+
+  textarea {
+    min-height: 4em;
+  }
+
+  .review-form-comments {
+    flex-grow: 1;
+    border-bottom: 1px solid #ccc;
+  }
+
+  input[type='radio'] {
+    background-image: url('/icon/star.svg');
+    width: 33px;
+    height: 33px;
+
+    &.active {
+      background-image: url('/icon/star-filled.svg');
+    }
+  }
+
+  fieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  button {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 5px 5px 25px 5px;
+  }
 }
 
 /* ====================== Footer ====================== */

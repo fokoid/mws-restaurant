@@ -11,8 +11,10 @@ class ReviewForm {
     const form = document.createElement('form');
     li.appendChild(form);
 
+    const container = form;
+
     const hiddenID = document.createElement('input');
-    form.appendChild(hiddenID);
+    container.appendChild(hiddenID);
     form.method = 'POST';
     form.addEventListener('submit', event => {
       event.preventDefault();
@@ -31,22 +33,30 @@ class ReviewForm {
     hiddenID.name = 'id';
 
     const hiddenRestaurantID = document.createElement('input');
-    form.appendChild(hiddenRestaurantID);
+    container.appendChild(hiddenRestaurantID);
     hiddenRestaurantID.type = 'hidden';
     hiddenRestaurantID.name = 'restaurant_id';
     hiddenRestaurantID.value = restaurant_id;
 
-    const nameContainer = document.createElement('label');
-    form.appendChild(nameContainer);
-    nameContainer.innerHTML = 'Name';
+    const nameLabel = document.createElement('label');
+    container.appendChild(nameLabel);
+    nameLabel.id = 'review-form-name';
+    nameLabel.innerHTML = 'Name';
+
     const nameInput = document.createElement('input');
-    nameContainer.appendChild(nameInput);
+    nameLabel.appendChild(nameInput);
     nameInput.type = 'text';
     nameInput.name = 'name';
+    nameInput.setAttribute('aria-labelledby', 'review-form-name');
     nameInput.required = 'required';
 
     const ratingContainer = document.createElement('fieldset');
-    form.appendChild(ratingContainer);
+    container.appendChild(ratingContainer);
+
+    const ratingLabel = document.createElement('legend');
+    ratingContainer.appendChild(ratingLabel);
+    ratingLabel.innerHTML = 'Rating';
+
     form.setAttribute('aria-label', 'Rating');
     const radios = [1, 2, 3, 4, 5].map(r => {
       const radio = document.createElement('input');
@@ -56,24 +66,39 @@ class ReviewForm {
       radio.id = `rating-${r}`;
       radio.value = r;
       radio.required = 'required';
-      radio.setAttribute('aria-label', r);
+      radio.setAttribute('aria-label', `${r} star${r === 1 ? '' : 's'}`);
+      radio.classList.add('icon-button');
+      radio.addEventListener('change', () => {
+        radios.forEach((rad, i) => {
+          if (i < r && radio.checked) {
+            rad.classList.add('active');
+          } else {
+            rad.classList.remove('active');
+          }
+        });
+      });
       return radio;
     });
 
+    const commentsLabel = document.createElement('label');
+    container.appendChild(commentsLabel);
+    commentsLabel.classList.add('review-form-comments');
+    commentsLabel.innerHTML = 'Comments';
+
     const textarea = document.createElement('textarea');
-    form.appendChild(textarea);
+    commentsLabel.appendChild(textarea);
     textarea.name = 'comments';
     textarea.placeholder = 'Enter comments…';
-    textarea.setAttribute('aria-label', 'Enter comments…');
+    textarea.setAttribute('aria-label', 'Enter comments');
 
     const submitButton = document.createElement('button');
-    form.appendChild(submitButton);
+    container.appendChild(submitButton);
     submitButton.classList.add('brand-button');
     submitButton.type = 'submit';
     submitButton.innerHTML = 'Submit Review';
 
     this.clear = () => {
-      header.innerHTML = 'Please write your review...';
+      header.innerHTML = 'Please submit your review';
       hiddenID.value = null;
       nameInput.value = '';
       textarea.value = '';
@@ -157,6 +182,7 @@ class Review {
 
     const buttonContainer = document.createElement('div');
     li.appendChild(buttonContainer);
+    buttonContainer.classList.add('review-controls');
 
     const edit = document.createElement('button');
     buttonContainer.appendChild(edit);
