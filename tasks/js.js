@@ -46,6 +46,9 @@ module.exports = ({gulp, config, imports}) => {
 
   gulp.task('js:build', gulp.series('js:mkdir', () => {
     return gulp.src(config.patterns.js).
+      pipe(sourcemaps.init()).
+      pipe(uglifyES()).
+      pipe(sourcemaps.write('.')).
       pipe(gulp.dest(jsDir));
   }));
   const jsTaskAll = ({dist = false}) => {

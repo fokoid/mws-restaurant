@@ -13,7 +13,7 @@ module.exports = {
   sourcemaps: require('gulp-sourcemaps'),
   sass: require('gulp-sass'),
   autoprefixer: require('gulp-autoprefixer'),
-  uglifyES: require('gulp-uglify-es'),
+  uglifyES: require('gulp-uglify-es').default,
   eslint: require('gulp-eslint'),
   responsive: require('gulp-responsive'),
   browserSync: require('browser-sync')
