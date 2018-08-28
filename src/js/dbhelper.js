@@ -218,9 +218,7 @@ export default class DBHelper {
   async deleteReview({id, restaurant_id}) {
     // if the review has an ID then it's already on the server
     // if not, it's local only. in this case, deletion is simple
-    console.log('ID:', id);
     if (!id) {
-      console.log('Wiping pending reviews');
       if (!restaurant_id) return;
       const {tx, store} = await this.open({storeName: 'pendingReviews', write: true});
       store.delete(restaurant_id);
@@ -245,9 +243,7 @@ export default class DBHelper {
     const method = 'DELETE';
     const url = `${this.origin}/reviews/${id}`;
     try {
-      console.log(`fetch(${url}, {method: ${method}})`);
       const response = await fetch(url, {method});
-      console.log(response);
       if (response.status === 200)
         return true;
     } catch (err) {
