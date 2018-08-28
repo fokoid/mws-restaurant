@@ -66,12 +66,7 @@ self.addEventListener('fetch', event => void event.respondWith((async () => {
     }
   }
   const match = await caches.match(event.request);
-  if (match) return match;
-  try {
-    return await fetch(event.request);
-  } catch (err) {
-    console.log('[sw] Fetch failed:', err);
-  }
+  return match || await fetch(event.request);
 })()));
 
 const fetchImg = async request => {
