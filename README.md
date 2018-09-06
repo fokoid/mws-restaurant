@@ -1,96 +1,119 @@
-# Mobile Web Specialist Certification Course
----
+# Restaurant Reviews
+## Udacity MWS Nanodegree Project
 
----
-#### _Three Stage Course Material Project - Restaurant Reviews_
+## Project Overview
 
-## Project Overview: Stage 1
+This project was submitted as coursework for the [Udacity][Udacity] [MWS
+Nanodegree][MWS]. Students were provided with the initial restaurant reviews
+website, which can be found [upstream][Upstream] of this repository. The initial
+website did not have a responsive design or standard accessibility features, and
+in fact did not even function well on a desktop display. The task of students
+was to fix these problems, and moreover to convert the static site into a
+[progressive web app][PWA] (PWA) by implementing offline first functionality.
 
-### Licenses
+In completing this project I implemented the following design and accessibility
+features:
 
-* SVG icons (modified for fill and color) from the
-  [Feather](https://feathericons.com) icon set (MIT license).
-* App icon and placeholder use the [Poiret
-  One](https://fonts.google.com/specimen/Poiret+One) font (Open Font License).
+* a mobile first redesign with major layout breakpoints targeting phones,
+  tablets and larger devices,
+* appropriate tab and focus control to support keyboard and screen reader users,
+* appropriate [ARIA][ARIA] labels and semantic page to support screen reader
+  use.
 
-### Custom Build Instructions
+To convert the static website to a progressive website I performed the
+following general steps:
 
-#### Quick Version
+* created site icons in various resolutions,
+* created an [app manifest][AppManifest] to enable mobile browsers to identify
+  the site as a PWA,
+* cached the HTML skeleton, CSS, JS, icons and other resources offline using a
+  [service worker][MDN:ServiceWorker] and the [Cache API][MDN:Cache],
+
+I also ensured that the database based functionality worked offline first:
+
+* cached JSON responses from the database server using
+  [IndexedDB][MDN:IndexedDB],
+* responded to database queries using the local cache _first_ to ensure fast
+  responses with no connection or a poor connection
+* queried the remote server in the background to replace stale data as soon as
+  possible,
+* allowed the user to mark favorites and submit, edit and delete reviews
+  offline,
+* synced user favorites and reviews with the server as soon as possible,
+* notified the user with an appropriate (ARIA-friendly) banner when working in
+  offline mode.
+
+## Setup Instructions
+
+### Quick Version
 
 ```
 yarn install
-gulp
 yarn start
 ```
-Of course, one must also start the database server separately.
-
-#### Details
-
-Necessary dependencies are saved in `package.json` and a Yarn lockfile is
-provided. Install with
-```
-yarn install
-```
-or if Yarn is not available,
+It is also necessary to start the [database server][DBServer]. If [`yarn`][yarn]
+is unavailable, `npm` may be used instead
 ```
 npm install
+npm start
 ```
 
-The project uses Gulp to automate generation of responsive images, SASS
-preprocessing and other build tasks. These are automatically run as a
-postinstall step after `yarn install`, but can be run manually with
+### Details
+
+Dependencies are stored in `package.json` and can be installed with
+[`yarn`][yarn]
 ```
-gulp
+yarn install
 ```
 
-After this build step the site can be served from `./public/`. A simple Express
-static webserver is provided for convenience. To serve the site on
-`localhost:3000`, run
+The site build process is automated with [`gulp`][gulp] and runs automatically
+as a postinstall task after installation. To build manually run
+```
+gulp build
+```
+
+After building, the site can be served from `public/` using an appropriate
+webserver. A simple [Express][Express] static webserver is provided for
+convenience. To serve the site on `http://localhost:3000` run
 ```
 yarn start
-```
-or
-```
-npm start
 ```
 or
 ```
 node server.js
 ```
 
-The project also supports build and hosting on Heroku. The Grunt task is run
-automatically as a `postinstall` step and the Node server is run in `Procfile`.
-To set up on Heroku, simply run
-```
-heroku create [app_name]
-git push heroku master
-```
+If in production mode (i.e. `NODE_ENV=production`), then CSS and JS will be
+minified. Otherwise, they will remain in cleartext and the development server
+will be started automatically when the build is complete.
 
-### Intro
+## Licenses and Third Party Content
 
-For the **Restaurant Reviews** projects, you will incrementally convert a static webpage to a mobile-ready web application. In **Stage One**, you will take a static design that lacks accessibility and convert the design to be responsive on different sized displays and accessible for screen reader use. You will also add a service worker to begin the process of creating a seamless offline experience for your users.
+### Software
 
-### Specification
+* The map is provided using [leafletjs][LeafletJS] with [Mapbox][Mabpox].
+* [IndexedDB][MDNIndexedDB] is used via the promise based interface [IndexedDB
+  Promised][IndexedDBPromised].
 
-You have been provided the code for a restaurant reviews website. The code has a lot of issues. It’s barely usable on a desktop browser, much less a mobile device. It also doesn’t include any standard accessibility features, and it doesn’t work offline at all. Your job is to update the code to resolve these issues while still maintaining the included functionality. 
+### Media
 
-### What do I do from here?
-
-1. In this folder, start up a simple HTTP server to serve up the site files on your local computer. Python has some simple tools to do this, and you don't even need to know Python. For most people, it's already installed on your computer. 
-
-In a terminal, check the version of Python you have: `python -V`. If you have Python 2.x, spin up the server with `python -m SimpleHTTPServer 8000` (or some other port, if port 8000 is already in use.) For Python 3.x, you can use `python3 -m http.server 8000`. If you don't have Python installed, navigate to Python's [website](https://www.python.org/) to download and install the software.
-
-2. With your server running, visit the site: `http://localhost:8000`, and look around for a bit to see what the current experience looks like.
-3. Explore the provided code, and start making a plan to implement the required features in three areas: responsive design, accessibility and offline use.
-4. Write code to implement the updates to get this site on its way to being a mobile-ready website.
-
-## Leaflet.js and Mapbox:
-
-This repository uses [leafletjs](https://leafletjs.com/) with [Mapbox](https://www.mapbox.com/). You need to replace `<your MAPBOX API KEY HERE>` with a token from [Mapbox](https://www.mapbox.com/). Mapbox is free to use, and does not require any payment information. 
-
-### Note about ES6
-
-Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
+* SVG icons (modified for fill and color) from the [Feather][Feather] icon set
+  (MIT license).
+* The [app icon][AppIcon] and [placeholder image][PlaceholderImage] use the
+  [Poiret One][Poiret] font (Open Font License).
 
 
-
+[Repo]: https://github.com/thornecc/mws-restaurant
+[DBServer]: https://github.com/thornecc/mws-restaurant-server
+[Upstream]: https://github.com/udacity/mws-restaurant-stage-1
+[gulp]: https://gulpjs.com/
+[Express]: https://expressjs.com/
+[LeafletJS]: https://leafletjs.com/
+[Mapbox]: https://www.mapbox.com/
+[IndexedDBPromised]: https://github.com/jakearchibald/idb
+[Feather]: https://feathericons.com
+[Poiret]: https://fonts.google.com/specimen/Poiret+One
+[OFL]: https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web
+[MDN:ServiceWorker]: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
+[MDN:Cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+[MDN:IndexedDB]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
