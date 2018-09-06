@@ -4,12 +4,13 @@
 ## Project Overview
 
 This project was submitted as coursework for the [Udacity][Udacity] [MWS
-Nanodegree][MWS]. Students were provided with the initial restaurant reviews
-website, which can be found [upstream][Upstream] of this repository. The initial
-website did not have a responsive design or standard accessibility features, and
-in fact did not even function well on a desktop display. The task of students
-was to fix these problems, and moreover to convert the static site into a
-[progressive web app][PWA] (PWA) by implementing offline first functionality.
+Nanodegree][Udacity-MWS]. Students were provided with the initial restaurant
+reviews website, which can be found [upstream][Upstream] of this repository. The
+initial website did not have a responsive design or standard accessibility
+features, and in fact did not even function well on a desktop display. The task
+of students was to fix these problems, and moreover to convert the static site
+into a [progressive web app][PWA] (PWA) by implementing offline first
+functionality.
 
 In completing this project I implemented the following design and accessibility
 features:
@@ -17,22 +18,22 @@ features:
 * a mobile first redesign with major layout breakpoints targeting phones,
   tablets and larger devices,
 * appropriate tab and focus control to support keyboard and screen reader users,
-* appropriate [ARIA][ARIA] labels and semantic page to support screen reader
+* appropriate [ARIA][MDN-ARIA] labels and semantic page to support screen reader
   use.
 
 To convert the static website to a progressive website I performed the
 following general steps:
 
 * created site icons in various resolutions,
-* created an [app manifest][AppManifest] to enable mobile browsers to identify
-  the site as a PWA,
+* created a [web app manifest][WebAppManifest] to enable mobile browsers to
+  identify the site as a PWA,
 * cached the HTML skeleton, CSS, JS, icons and other resources offline using a
-  [service worker][MDN:ServiceWorker] and the [Cache API][MDN:Cache],
+  [service worker][MDN-ServiceWorker] and the [Cache API][MDN-Cache],
 
 I also ensured that the database based functionality worked offline first:
 
 * cached JSON responses from the database server using
-  [IndexedDB][MDN:IndexedDB],
+  [IndexedDB][MDN-IndexedDB],
 * responded to database queries using the local cache _first_ to ensure fast
   responses with no connection or a poor connection
 * queried the remote server in the background to replace stale data as soon as
@@ -91,8 +92,8 @@ will be started automatically when the build is complete.
 
 ### Software
 
-* The map is provided using [leafletjs][LeafletJS] with [Mapbox][Mabpox].
-* [IndexedDB][MDNIndexedDB] is used via the promise based interface [IndexedDB
+* The map is provided using [leafletjs][LeafletJS] with [Mapbox][Mapbox].
+* [IndexedDB][MDN-IndexedDB] is used via the promise based interface [IndexedDB
   Promised][IndexedDBPromised].
 
 ### Media
@@ -107,6 +108,7 @@ will be started automatically when the build is complete.
 [DBServer]: https://github.com/thornecc/mws-restaurant-server
 [Upstream]: https://github.com/udacity/mws-restaurant-stage-1
 [gulp]: https://gulpjs.com/
+[yarn]: https://yarnpkg.com/
 [Express]: https://expressjs.com/
 [LeafletJS]: https://leafletjs.com/
 [Mapbox]: https://www.mapbox.com/
@@ -114,6 +116,13 @@ will be started automatically when the build is complete.
 [Feather]: https://feathericons.com
 [Poiret]: https://fonts.google.com/specimen/Poiret+One
 [OFL]: https://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=OFL_web
-[MDN:ServiceWorker]: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
-[MDN:Cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
-[MDN:IndexedDB]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+[MDN-ServiceWorker]: https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API
+[MDN-Cache]: https://developer.mozilla.org/en-US/docs/Web/API/Cache
+[MDN-IndexedDB]: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
+[MDN-ARIA]: https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA
+[PWA]: https://developers.google.com/web/progressive-web-apps/
+[WebAppManifest]: https://developers.google.com/web/fundamentals/web-app-manifest/
+[Udacity]: https://udacity.com/
+[Udacity-MWS]: https://www.udacity.com/course/mobile-web-specialist-nanodegree--nd024
+[AppIcon]: src/icon/app-512.png
+[PlaceholderImage]: src/img/placeholder.png
