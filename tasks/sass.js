@@ -15,9 +15,10 @@ module.exports = ({gulp, config, imports}) => {
   gulp.task('sass:mkdir', gulp.series('sass:clean', () => mkdir(cssDir)));
 
   gulp.task('sass:build', gulp.series('sass:clean', 'sass:mkdir', () => {
+    const outputStyle = process.env.NODE_ENV === 'production' ? 'compressed' : 'expanded';
     return gulp.src(config.patterns.sass).
       pipe(sourcemaps.init()).
-      pipe(sass({outputStyle: 'compressed'}).on('error', sass.logError)).
+      pipe(sass({outputStyle}).on('error', sass.logError)).
       pipe(autoprefixer({
         'browsers': ['last 2 versions']
       })).

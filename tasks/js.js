@@ -6,7 +6,6 @@ module.exports = ({gulp, config, imports}) => {
     mkdir,
     eslint,
     sourcemaps,
-    concat,
     uglifyES
   } = imports;
   const jsDir = path.join(config.distDir, 'js');
@@ -21,47 +20,12 @@ module.exports = ({gulp, config, imports}) => {
   gulp.task('js:clean', () => del([jsDir]));
   gulp.task('js:mkdir', gulp.series('js:clean', () => mkdir(jsDir)));
 
-  const jsTask = ({name, dist = false}) => {
-    gulp.task(`js:${name}${dist?':dist':''}`, () => {
-      const files = [
-        'idb.js',
-        'shared.js',
-        'dbhelper.js',
-        `${name}.js`
-      ].map(file => path.join(config.srcDir, 'js', file));
-      let stream = gulp.src(files).
-        pipe(sourcemaps.init()).
-        pipe(concat(`${name}.js`));
-      if (dist)
-        stream = stream.pipe(uglifyES());
-      return stream.
-        pipe(sourcemaps.write('.')).
-        pipe(gulp.dest(jsDir));
-    });
-  };
-  //jsTask({name: 'main', dist: false});
-  //jsTask({name: 'main', dist: true});
-  //jsTask({name: 'restaurant_info', dist: false});
-  //jsTask({name: 'restaurant_info', dist: true});
-
   gulp.task('js:build', gulp.series('js:mkdir', () => {
-    return gulp.src(config.patterns.js).
-      pipe(sourcemaps.init()).
-      pipe(uglifyES()).
-      pipe(sourcemaps.write('.')).
-      pipe(gulp.dest(jsDir));
+    let stream = gulp.src(config.patterns.js).pipe(sourcemaps.init());
+    if (process.env.NODE_ENV === 'production')
+      stream = stream.pipe(uglifyES());
+    return stream.pipe(sourcemaps.write('.')).pipe(gulp.dest(jsDir));
   }));
-  const jsTaskAll = ({dist = false}) => {
-    gulp.task(`js:scripts${dist?':dist':''}`, gulp.series(
-      'js:mkdir',
-      gulp.parallel(
-        `js:main${dist?':dist':''}`,
-        `js:restaurant_info${dist?':dist':''}`
-      )
-    ));
-  };
-  //jsTaskAll({dist: false});
-  //jsTaskAll({dist: true});
 
   gulp.task('sw:copy', () => {
     return gulp.src([config.patterns.sw]).

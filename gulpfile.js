@@ -40,4 +40,7 @@ gulp.task('serve', gulp.series('build', () => {
     on('change', browserSync.reload);
 }));
 
-gulp.task('default', gulp.series('serve'));
+let defaultTask = 'serve';
+if (process.env.NODE_ENV === 'production')
+ defaultTask = 'build';
+gulp.task('default', gulp.series(defaultTask));
