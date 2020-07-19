@@ -16,7 +16,7 @@ const applyToPendingStores = async f => {
 export default class DBHelper {
   constructor({
     host='localhost',
-    port=1337,
+    port=1338,
     name='restaurant-reviews',
     pendingCallback
   } = {}) {
@@ -59,7 +59,7 @@ export default class DBHelper {
   }
 
   queryUrl({id=''} = {}) {
-    return `http://localhost:1337/restaurants/${id}`;
+    return `http://localhost:1338/restaurants/${id}`;
   }
 
   networkFetch({id=''} = {}) {
